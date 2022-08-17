@@ -1,5 +1,49 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2707892694054862784
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4819903861094832964}
+  - component: {fileID: 8878963330822314391}
+  m_Layer: 0
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4819903861094832964
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2707892694054862784}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0.3}
+  m_LocalScale: {x: 1.5, y: 2, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9058759375278784360}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8878963330822314391
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2707892694054862784}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9058759375278784362
 GameObject:
   m_ObjectHideFlags: 0
@@ -9,7 +53,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9058759375278784360}
-  - component: {fileID: 9058759375278784361}
+  - component: {fileID: 6655480542832961729}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -31,10 +75,11 @@ Transform:
   - {fileID: 9058759376799094537}
   - {fileID: 9058759376329783328}
   - {fileID: 9058759376945443493}
+  - {fileID: 4819903861094832964}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9058759375278784361
+--- !u!114 &6655480542832961729
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,16 +88,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 9058759375278784362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1aa89cbdf75e76449a9791833da7f8c, type: 3}
+  m_Script: {fileID: 11500000, guid: f7fa39a944c86694eb9a549af9bf4900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tLeftWall: {fileID: 9058759376799094537}
   tRightWall: {fileID: 9058759376945443493}
   tTopWall: {fileID: 9058759376329783328}
-  v2Size: {x: 8, y: 3}
+  v2WallSize: {x: 12, y: 3}
   v2DoorSize: {x: 1.5, y: 2}
   doorPosition: 0
-  thickness: 0.1
+  wallThickness: 0.1
+  cExit: {fileID: 8878963330822314391}
+  colliderThickness: 0.5
+  gDoor: {fileID: 0}
+  doorId: 0
 --- !u!1 &9058759376329783329
 GameObject:
   m_ObjectHideFlags: 0
@@ -81,7 +130,7 @@ Transform:
   m_GameObject: {fileID: 9058759376329783329}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 2.5, z: 0}
-  m_LocalScale: {x: 8, y: 1, z: 0.1}
+  m_LocalScale: {x: 12, y: 1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 9058759375278784360}
   m_RootOrder: 1
@@ -115,7 +164,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9058759376329783329}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -175,8 +224,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9058759376799094538}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.375, y: 1, z: 0}
-  m_LocalScale: {x: 3.25, y: 2, z: 0.1}
+  m_LocalPosition: {x: -3.375, y: 1, z: 0}
+  m_LocalScale: {x: 5.25, y: 2, z: 0.1}
   m_Children: []
   m_Father: {fileID: 9058759375278784360}
   m_RootOrder: 0
@@ -210,7 +259,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9058759376799094538}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -270,8 +319,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9058759376945443494}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.375, y: 1, z: 0}
-  m_LocalScale: {x: 3.25, y: 2, z: 0.1}
+  m_LocalPosition: {x: 3.375, y: 1, z: 0}
+  m_LocalScale: {x: 5.25, y: 2, z: 0.1}
   m_Children: []
   m_Father: {fileID: 9058759375278784360}
   m_RootOrder: 2
@@ -305,7 +354,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9058759376945443494}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
