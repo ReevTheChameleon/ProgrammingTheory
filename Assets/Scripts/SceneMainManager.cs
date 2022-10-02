@@ -9,6 +9,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] Material matCowDigit;
 	[SerializeField] Material matNormalDigit;
 
+	[SerializeField] GameObject gPlayer;
+
 	private int[] aDigitExit = new int[3];
 	private int[] aDigitCurrent = new int[3];
 	
@@ -54,30 +56,30 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		gCover.SetActive(false);
 	}
 	void Update(){
-		if(Keyboard.current.eKey.wasPressedThisFrame){
-			//int[] aSavedDigit = new int[3];
-			//System.Array.Copy(aDigitCurrent,aSavedDigit,3);
-			//for(int i=0; i<6; ++i){
-			//	changeRoom(i);
-			//	System.Array.Copy(aSavedDigit,aDigitCurrent,3);
-			//}
-			StartCoroutine(changeRoom(1));
-		}
-		else if(Keyboard.current.wKey.wasPressedThisFrame){
-			StartCoroutine(changeRoom(2));
-		}
-		else if(Keyboard.current.qKey.wasPressedThisFrame){
-			StartCoroutine(changeRoom(3));
-		}
-		else if(Keyboard.current.aKey.wasPressedThisFrame){
-			StartCoroutine(changeRoom(4));
-		}
-		else if(Keyboard.current.sKey.wasPressedThisFrame){
-			StartCoroutine(changeRoom(5));
-		}
-		else if(Keyboard.current.dKey.wasPressedThisFrame){
-			StartCoroutine(changeRoom(0));
-		}
+		//if(Keyboard.current.eKey.wasPressedThisFrame){
+		//	//int[] aSavedDigit = new int[3];
+		//	//System.Array.Copy(aDigitCurrent,aSavedDigit,3);
+		//	//for(int i=0; i<6; ++i){
+		//	//	changeRoom(i);
+		//	//	System.Array.Copy(aSavedDigit,aDigitCurrent,3);
+		//	//}
+		//	StartCoroutine(changeRoom(1));
+		//}
+		//else if(Keyboard.current.wKey.wasPressedThisFrame){
+		//	StartCoroutine(changeRoom(2));
+		//}
+		//else if(Keyboard.current.qKey.wasPressedThisFrame){
+		//	StartCoroutine(changeRoom(3));
+		//}
+		//else if(Keyboard.current.aKey.wasPressedThisFrame){
+		//	StartCoroutine(changeRoom(4));
+		//}
+		//else if(Keyboard.current.sKey.wasPressedThisFrame){
+		//	StartCoroutine(changeRoom(5));
+		//}
+		//else if(Keyboard.current.dKey.wasPressedThisFrame){
+		//	StartCoroutine(changeRoom(0));
+		//}
 	}
 	private GameObject spawnRoom(Vector3 vPosition,int[] aDigit){
 		GameObject gRoom = poolerRoom.getObject(vPosition);
@@ -127,7 +129,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		for(int i=1; i<arrayLength; ++i){
 			if(aDigit[index] == aDigit[(index+i)%arrayLength]){
 				aDigit[index] = (aDigit[index]+step)%10;
-				i=1; //start over
+				i=0; //start over after ++i
 			}
 		}
 	}
@@ -162,6 +164,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		gRoomCurrent = gRoomSpawn;
 		gRoomCurrent.transform.position = Vector3.zero;
 		Camera.main.transform.setPosition(x:0.0f,z:0.0f);
+		gPlayer.transform.Translate(-vRoomSpawnPos);
 	}
 
 	#if UNITY_EDITOR
