@@ -1,33 +1,50 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Chameleon;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [RequireComponent(typeof(PlayerInput))]
-[RequireComponent(typeof(Animator))]
-public class PlayerController : MonoBehaviour{
+[RequireComponent(typeof(AnimationPlayer))]
+public class PlayerController : LoneMonoBehaviour<PlayerController>{
+	//InputActionIDs
 	[SerializeField] InputActionID actionIDMove;
-	[SerializeField] AnimatorParamID_Bool animParamRun;
+
+	//AnimationClips
+	[SerializeField] AnimationClip clipIdle;
+	[SerializeField] AnimationClip clipRun;
+	[Bakable] float transitionTime = 0.2f;
+
+	[Bakable] float forwardAngle = 90f; //y Euler Angle of forward direction
 
 	PlayerInput playerInput;
-	Animator animator;
+	AnimationPlayer animPlayer;
 
-	void Awake(){
+	protected override void Awake(){
+		base.Awake();
 		playerInput = GetComponent<PlayerInput>();
-		animator = GetComponent<Animator>();
+		animPlayer = GetComponent<AnimationPlayer>();
 	}
 	void OnEnable(){
-		playerInput.actions[actionIDMove.Id].performed += onInputMove;
-		playerInput.actions[actionIDMove.Id].canceled += onInputIdle;
+		playerInput.actions[actionIDMove].performed += onInputMove;
+		playerInput.actions[actionIDMove].canceled += onInputIdle;
 	}
 	void OnDisable(){
-		playerInput.actions[actionIDMove.Id].performed -= onInputMove;
-		playerInput.actions[actionIDMove.Id].canceled -= onInputIdle;
+		playerInput.actions[actionIDMove].performed -= onInputMove;
+		playerInput.actions[actionIDMove].canceled -= onInputIdle;
 	}
 	void onInputMove(InputAction.CallbackContext context){
-		animator.setParameter(animParamRun,true);
 		Vector2 v2Direction = context.ReadValue<Vector2>();
+		transform.setEulerY(-v2Direction.polarAngle()*Mathf.Rad2Deg + forwardAngle);
+		animPlayer.transitionTo(clipRun,transitionTime);
 	}
 	void onInputIdle(InputAction.CallbackContext context){
-		animator.setParameter(animParamRun,false);
+		animPlayer.transitionTo(clipIdle,transitionTime);
 	}
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(PlayerController))]
+class PlayerControllerEditor : MonoBehaviourBakerEditor{ }
+#endif

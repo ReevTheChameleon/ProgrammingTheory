@@ -22,6 +22,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] float panDuration;
 	private GameObject gRoomCurrent;
 	private Material matCover;
+
+	LoneCoroutine routineChangeRoom = new LoneCoroutine();
 	
 	protected override void Awake(){
 		base.Awake();
@@ -133,7 +135,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 			}
 		}
 	}
-	private IEnumerator changeRoom(int direction){
+	private IEnumerator sequenceChangeRoom(int direction){
 		updateRoomNumber(direction);
 		GameObject gRoomSpawn = spawnRoom(getRoomOffset(direction),aDigitCurrent);
 		gCover.transform.localEulerAngles = new Vector3(
@@ -165,6 +167,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		gRoomCurrent.transform.position = Vector3.zero;
 		Camera.main.transform.setPosition(x:0.0f,z:0.0f);
 		gPlayer.transform.Translate(-vRoomSpawnPos);
+	}
+	public void changeRoom(int direction){
+		routineChangeRoom.start(this,sequenceChangeRoom(direction));
 	}
 
 	#if UNITY_EDITOR

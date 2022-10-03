@@ -21,9 +21,6 @@ public class Doorway : PrimitiveDoorway{
 			cExit.transform.localScale.z
 		);
 	}
-	void OnTriggerEnter(Collider other){
-
-	}
 }
 
 #if UNITY_EDITOR
