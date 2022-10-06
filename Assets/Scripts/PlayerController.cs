@@ -21,6 +21,8 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	PlayerInput playerInput;
 	AnimationPlayer animPlayer;
 
+	[Tag][SerializeField] string tagPlayer;
+
 	protected override void Awake(){
 		base.Awake();
 		playerInput = GetComponent<PlayerInput>();
