@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1cb67d71b4cddd4f9cbb39ecae7a9ea, type: 3}
   m_Name: FieldUndoData
   m_EditorClassIdentifier: 
-  objectID: -457738
-  fieldName: durationUnveil
-  sValue: 1.5
+  objectID: 19902
+  fieldName: v2LookRangeVertical
+  sValue: Vector2(-20,60)
   recorderID: -1
   bSetValue: 1
   bakableType: 0
   bDummyToggle: 0
   fieldName2: 
-  sValue2: 90
+  sValue2: 1.5
   recorderID2: -1
   bSetValue2: 0
   bakableType2: 0

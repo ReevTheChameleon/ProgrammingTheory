@@ -8,20 +8,28 @@ using UnityEditor;
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(AnimationPlayer))]
 public class PlayerController : LoneMonoBehaviour<PlayerController>{
-	//InputActionIDs
-	[SerializeField] InputActionID actionIDMove;
-
-	//AnimationClips
-	[SerializeField] AnimationClip clipIdle;
-	[SerializeField] AnimationClip clipRun;
-	[Bakable] float transitionTime = 0.2f;
-
-	[Bakable] float forwardAngle = 90f; //y Euler Angle of forward direction
-
 	PlayerInput playerInput;
 	AnimationPlayer animPlayer;
+	
+	[Header("InputMove")]
+	[SerializeField] InputActionID actionIDMove;
+	[SerializeField] AnimationClip clipIdle;
+	[SerializeField] AnimationClip clipRun;
+	[SerializeField] float transitionTime = 0.2f;
+	private bool bMoving;
+	private Vector2 v2Direction;
 
-	[Tag][SerializeField] string tagPlayer;
+	[Header("inputLook")]
+	[SerializeField] InputActionID actionIDLook;
+	[SerializeField] Transform tVCamTarget;
+	[SerializeField] Vector2 v2LookRangeVertical;
+	public float inputLookSensitivity;
+
+	[Header("inputZoom")]
+	[SerializeField] InputActionID actionIDZoom;
+	[SerializeField] ThirdPersonCameraControl cameraControl;
+	[SerializeField] Vector2 v2ZoomRange;
+	[SerializeField] float inputZoomSensitivity;
 
 	protected override void Awake(){
 		base.Awake();
@@ -31,22 +39,56 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	void OnEnable(){
 		playerInput.actions[actionIDMove].performed += onInputMove;
 		playerInput.actions[actionIDMove].canceled += onInputIdle;
+		playerInput.actions[actionIDLook].performed += onInputLook;
+		playerInput.actions[actionIDZoom].performed += onInputZoom;
 	}
 	void OnDisable(){
 		playerInput.actions[actionIDMove].performed -= onInputMove;
 		playerInput.actions[actionIDMove].canceled -= onInputIdle;
+		playerInput.actions[actionIDLook].performed -= onInputLook;
+		playerInput.actions[actionIDZoom].performed -= onInputZoom;
 	}
-	void onInputMove(InputAction.CallbackContext context){
-		Vector2 v2Direction = context.ReadValue<Vector2>();
-		transform.setEulerY(-v2Direction.polarAngle()*Mathf.Rad2Deg + forwardAngle);
+	private void onInputMove(InputAction.CallbackContext context){
+		v2Direction = context.ReadValue<Vector2>();
+		faceDirection(v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f);
 		animPlayer.transitionTo(clipRun,transitionTime);
+		bMoving = true;
 	}
-	void onInputIdle(InputAction.CallbackContext context){
+	private void onInputIdle(InputAction.CallbackContext context){
 		animPlayer.transitionTo(clipIdle,transitionTime);
+		bMoving = false;
+	}
+	private void onInputLook(InputAction.CallbackContext context){
+		Vector2 v2Delta = inputLookSensitivity*context.ReadValue<Vector2>();
+		Vector3 eulerAngles = tVCamTarget.eulerAngles;
+		eulerAngles.y = (eulerAngles.y+v2Delta.x) % 360.0f;
+		eulerAngles.x = Mathf.Clamp(
+			tVCamTarget.getPitchAngle()-v2Delta.y,
+			v2LookRangeVertical.x,
+			v2LookRangeVertical.y
+		);
+		tVCamTarget.eulerAngles = eulerAngles;
+		if(bMoving)
+			faceDirection(v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f);
+	}
+	private void faceDirection(float angle){ //delta angle from tVCamTarget forward
+		/* Trick from Unity tutorial */
+		transform.setEulerY(tVCamTarget.eulerAngles.y-angle);
+		tVCamTarget.setLocalEulerY(angle);
+	}
+	private void onInputZoom(InputAction.CallbackContext context){
+		float delta = inputZoomSensitivity*context.ReadValue<float>(); //usually Windows is +/-120
+		cameraControl.targetCameraDistance =
+			Mathf.Clamp(
+				cameraControl.targetCameraDistance + delta,
+				v2ZoomRange.x,
+				v2ZoomRange.y
+			)
+		;
 	}
 }
 
-#if UNITY_EDITOR
-[CustomEditor(typeof(PlayerController))]
-class PlayerControllerEditor : MonoBehaviourBakerEditor{ }
-#endif
+//#if UNITY_EDITOR
+//[CustomEditor(typeof(PlayerController))]
+//class PlayerControllerEditor : MonoBehaviourBakerEditor{ }
+//#endif
