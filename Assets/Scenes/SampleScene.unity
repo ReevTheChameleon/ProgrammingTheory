@@ -267,8 +267,8 @@ MonoBehaviour:
   CameraDistance: 0
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 0
-  IgnoreTag: 
+    m_Bits: 1
+  IgnoreTag: VCam
   CameraRadius: 0.2
 --- !u!114 &271898938
 MonoBehaviour:
@@ -1420,7 +1420,7 @@ GameObject:
   - component: {fileID: 1450516117}
   m_Layer: 0
   m_Name: VCamPlayer
-  m_TagString: Untagged
+  m_TagString: VCam
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2008,7 +2008,7 @@ MonoBehaviour:
   actionIDZoom:
     sGuid: f4d97fa2-3a0d-4e9b-a6a4-5b845c53482d
   vCam: {fileID: 1450516117}
-  v2ZoomRange: {x: 2, y: 5}
+  v2ZoomRange: {x: 2, y: 8}
   inputZoomSensitivity: 0.002
 --- !u!4 &2060826207
 Transform:
