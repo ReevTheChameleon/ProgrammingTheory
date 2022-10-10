@@ -34,7 +34,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	protected override void Awake(){
 		base.Awake();
 		playerInput = GetComponent<PlayerInput>();
-		animPlayer = GetComponent<AnimationPlayer>();
+		animPlayer = GetComponentInChildren<AnimationPlayer>();
 	}
 	void OnEnable(){
 		playerInput.actions[actionIDMove].performed += onInputMove;

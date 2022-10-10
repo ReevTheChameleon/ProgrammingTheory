@@ -904,8 +904,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   epsilon: 0.0001
+  cameraRadius: 0.2
   tTarget: {fileID: 570019132}
-  moveDamping: 0.1
+  followUpdateMethod: 0
+  followDamping: 0.15
+  lookUpdateMethod: 1
+  lookDamping: 0.01
   targetCameraDistance: 3
   zoomDamping: 0.2
   obstacleLayer:
@@ -1857,7 +1861,7 @@ MonoBehaviour:
     sGuid: 4d5d6c47-935c-489a-af9b-ad802ad0a19d
   tVCamTarget: {fileID: 570019132}
   v2LookRangeVertical: {x: -20, y: 60}
-  inputLookSensitivity: 0.25
+  inputLookSensitivity: 0.15
   actionIDZoom:
     sGuid: f4d97fa2-3a0d-4e9b-a6a4-5b845c53482d
   cameraControl: {fileID: 963194230}
