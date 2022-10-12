@@ -1,7 +1,4 @@
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Chameleon{
 
@@ -10,7 +7,8 @@ public enum eUpdateMethod{FixedUpdate,LateUpdate,}
 public class ThirdPersonCameraControl : MonoBehaviour{
 	[Header("Camera")]
 	Camera targetCamera;
-	[Min(0.000001f)] public float epsilon =0.0001f;
+	[Min(0.000001f)] public float epsilonLinear =0.0001f;
+	[Min(0.000001f)] public float epsilonRotation =0.000001f;
 	[Min(0.0f)] public float cameraRadius =0.2f;
 
 	[Header("Target")]
@@ -35,50 +33,60 @@ public class ThirdPersonCameraControl : MonoBehaviour{
 		targetCamera = GetComponent<Camera>();
 	}
 	void Start(){
+		applySettingsImmediate();
+	}
+	public void applySettingsImmediate(){
 		vLook = tTarget.position;
 		qLook = tTarget.rotation;
 		cameraDistance = targetCameraDistance;
 		transform.position = vLook-tTarget.forward*cameraDistance;
+		transform.rotation = qLook;
 	}
 	private void updateFollow(float deltaTime){
 		Vector3 vDelta = tTarget.position-vLook;
 		float vDeltaMagnitude = vDelta.magnitude;
-		if(vDeltaMagnitude < epsilon)
+		if(vDeltaMagnitude < epsilonLinear)
 			return;
-		if(followDamping != 0.0f){
-			float t = interpolate(deltaTime,lookDamping);
-			vDelta = (1-t)*vDelta;
-			vLook = tTarget.position-vDelta;
-		}
-		else
-			vLook = tTarget.position;
+		vLook =
+			followDamping == 0.0f ?
+			tTarget.position :
+			tTarget.position - (1-interpolate(deltaTime,followDamping))*vDelta
+		;
 	}
 	private void updateLook(float deltaTime){
-		//if(Quaternion.Dot(qLook,tTarget.rotation) > 1.0f-epsilon) //Credit: falstro, gamedev.stackexchange
-		//	return;
-		if(qLook == tTarget.rotation) //equivalent to code above with epsilon 0.000001f
+		if(Quaternion.Dot(qLook,tTarget.rotation) > 1.0f-epsilonRotation) //Credit: falstro, gamedev.stackexchange
 			return;
+		//if(qLook == tTarget.rotation) //equivalent to code above with epsilon 0.000001f
+		//	return;
 		Vector3 vDelta = tTarget.position-vLook;
 		vDelta = Quaternion.Inverse(qLook)*vDelta;
-		/* The really correct way to lerp Quaternion is to use slerp, (Credit: Luke Hutchison, math.stackexchange)
-		but it shouldn't matter much if delta is small. */
 		qLook =
-			lookDamping==0.0f ? 
+			lookDamping==0.0f ?
 			tTarget.rotation :
-			Quaternion.Lerp(qLook,tTarget.rotation,interpolate(deltaTime,lookDamping)) //clamped to [0,1]
+			Quaternion.Euler(Vector3Extension.lerpEulerAngles(
+				qLook.eulerAngles,
+				tTarget.rotation.eulerAngles,
+				interpolate(deltaTime,lookDamping)
+			))
+			//Quaternion.Lerp(qLook,tTarget.rotation,interpolate(deltaTime,lookDamping))
+			//or use Slerp for more accurate result when delta is large (Credit: Luke Hutchison, math.stackexchange)
+			/* Lerping quaternions directly can produce unexpected result when some of the
+			eulerAngles need to be controlled. For example, doing normal quaternion lerp
+			from eulerAngles (0,0,0) to (90,0,0) will produce eulerAngles.z!=0 during the lerp,
+			which in this case where eulerAngles.z is expected to be 0 at all the time,
+			is not desirable. But if delta very small this may be negligible, and
+			quaternion lerp can perform (a little bit) better. */
 		;
 		vDelta = qLook*vDelta;
 		vLook = tTarget.position-vDelta;
 	}
 	private void updateZoom(float deltaTime){
 		float deltaCameraDistance = targetCameraDistance-cameraDistance;
-		if(Mathf.Abs(deltaCameraDistance) > epsilon){
-			float t = interpolate(deltaTime,followDamping);
-			//float t = Mathf.Clamp01(deltaTime/followDamping);
+		if(Mathf.Abs(deltaCameraDistance) > epsilonLinear){
 			cameraDistance =
 				zoomDamping == 0.0f ?
 				targetCameraDistance :
-				cameraDistance + t*deltaCameraDistance
+				cameraDistance + interpolate(deltaTime,zoomDamping)*deltaCameraDistance
 			;
 		}
 		float occlusionDistance = getOcclusionDistance();
@@ -99,7 +107,8 @@ public class ThirdPersonCameraControl : MonoBehaviour{
 			transform.position-vLook,
 			out hitInfo,
 			raycastDistance,
-			obstacleLayer
+			obstacleLayer,
+			QueryTriggerInteraction.Ignore //ignore trigger
 		)){
 			return hitInfo.distance;
 		}
@@ -128,30 +137,6 @@ public class ThirdPersonCameraControl : MonoBehaviour{
 		transform.position = vLook-qLook*Vector3.forward*cameraDistance;
 		transform.rotation = qLook;
 	}
-
-	//#if UNITY_EDITOR
-	//[CustomEditor(typeof(ThirdPersonCameraControl))]
-	//class ThirdPersonCameraControlEditor : Editor{
-	//	private ThirdPersonCameraControl targetAs;
-	//	private bool bFoldout = false;
-	//	void OnEnable(){
-	//		targetAs = (ThirdPersonCameraControl)target;
-	//	}
-	//	public override void OnInspectorGUI() {
-	//		DrawDefaultInspector();
-	//		bFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(bFoldout,"Info");
-	//		EditorGUILayout.EndFoldoutHeaderGroup();
-	//		GUI.enabled = false;
-	//		if(bFoldout){
-	//			EditorGUILayout.Vector3Field("vLook",targetAs.vLook);
-	//			EditorGUILayout.Vector3Field("qLook",targetAs.qLook.eulerAngles);
-	//			EditorGUILayout.FloatField("cameraDistance",targetAs.cameraDistance);
-	//			EditorGUILayout.Toggle("bOccluded",targetAs.bOccluded);
-	//			EditorGUILayout.FloatField("occludedDistance",targetAs.occludedDistance);
-	//		}
-	//	}
-	//}
-	//#endif
 }
 
 } //end namespace Chameleon

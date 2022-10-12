@@ -903,7 +903,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82980ef703998934183dd953650b9b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  epsilon: 0.0001
+  epsilonLinear: 0.0001
+  epsilonRotation: 0.000001
   cameraRadius: 0.2
   tTarget: {fileID: 570019132}
   followUpdateMethod: 0
