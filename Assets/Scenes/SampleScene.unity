@@ -1834,7 +1834,7 @@ Animator:
   m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -1868,6 +1868,7 @@ MonoBehaviour:
   cameraControl: {fileID: 963194230}
   v2ZoomRange: {x: 2, y: 8}
   inputZoomSensitivity: 0.005
+  turnSpeed: 1080
 --- !u!4 &2060826207
 Transform:
   m_ObjectHideFlags: 0
