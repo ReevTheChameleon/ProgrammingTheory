@@ -5,12 +5,14 @@ using System.Collections;
 using UnityEditor;
 #endif
 
-public class DoorNone : MonoBehaviour{
-	private LoneCoroutine routineUnveil;
-	private LoneCoroutine routineVeil;
+public interface IDoor{
+	void reset();
+}
+public class DoorNone : MonoBehaviour,IDoor{
+	private LoneCoroutine routineDoor = new LoneCoroutine();
 	private Material matInstanceDoor;
-	[Bakable] float durationUnveil = 1.5f;
-	public 
+	[Bakable] static float durationUnveil = 0.5f;
+	private TweenRoutineUnit subitrUnveil;
 
 	void Awake(){
 		matInstanceDoor = GetComponent<Renderer>().material;
@@ -20,47 +22,38 @@ public class DoorNone : MonoBehaviour{
 		Alternatively, one can use MaterialPropertyBlock, but we are using URP which allows
 		SRP batching, and MaterialPropertyBlock is not compatible with it.
 		Because we are sharing Lit Shader with other Materials, this approach seems best. */
-		routineUnveil = new LoneCoroutine();
-		routineVeil = new LoneCoroutine(onVeilComplete);
+		subitrUnveil = matInstanceDoor.tweenAlpha(1.0f,0.0f,durationUnveil);
 	}
-	private void onVeilComplete(){
+	private IEnumerator rfUnveil(){
+		SceneMainManager.Instance.prepareNeighbor(transform);
+		subitrUnveil.bReverse = false;
+		yield return subitrUnveil;
+	}
+	private IEnumerator rfVeil(){
+		subitrUnveil.bReverse = true;
+		yield return subitrUnveil;
 		SceneMainManager.Instance.discardNeighbor();
 	}
 	void OnTriggerEnter(Collider other){
-		SceneMainManager.Instance.prepareNeighbor(transform);
-		routineVeil.stop(this,false);
-		routineUnveil.start(this,rfUnveil());
+		routineDoor.stop();
+		routineDoor.start(this,rfUnveil());
 	}
 	void OnTriggerExit(Collider other){
 		SceneMainManager.Instance.updateCurrentRoom();
-		routineUnveil.stop(this);
-		routineVeil.start(this,rfVeil());
+		routineDoor.stop();
+		routineDoor.start(this,rfVeil());
 	}
 	void OnDisable(){
-		matInstanceDoor.color = matInstanceDoor.color.newA(1.0f);
+		reset();
 	}
 	void OnDestroy(){
 		Destroy(matInstanceDoor);
 	}
-	private IEnumerator rfUnveil(){
-		float tweenAmount = matInstanceDoor.color.a;
-		yield return matInstanceDoor.tweenAlpha(
-			1.0f,
-			0.0f,
-			durationUnveil*tweenAmount,
-			TweenRoutine.eTweenLoopMode.Once,
-			1.0f-tweenAmount
-		);
-	}
-	private IEnumerator rfVeil(){
-		float tweenAmount = 1.0f-matInstanceDoor.color.a;
-		yield return matInstanceDoor.tweenAlpha(
-			0.0f,
-			1.0f,
-			durationUnveil*tweenAmount,
-			TweenRoutine.eTweenLoopMode.Once,
-			1.0f-tweenAmount
-		);
+	public void reset(){
+		routineDoor.stop();
+		subitrUnveil.bReverse = false;
+		subitrUnveil.Reset();
+		matInstanceDoor.color = matInstanceDoor.color.newA(1.0f);
 	}
 }
 

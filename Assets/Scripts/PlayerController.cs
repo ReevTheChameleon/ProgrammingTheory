@@ -56,7 +56,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDMove].canceled -= onInputIdle;
 		playerInput.actions[actionIDLook].performed -= onInputLook;
 		playerInput.actions[actionIDZoom].performed -= onInputZoom;
-		routineTurn.stop(this);
+		routineTurn.stop();
 		//routineTurn.evOnStop -= unsubscribeRootMotionOverride;
 	}
 	private Vector3 vMoveDirection;
@@ -75,8 +75,8 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		bMoving = true;
 	}
 	private void onInputIdle(InputAction.CallbackContext context){
-		routineTurn.stop(this);
-		routineMove.stop(this);
+		routineTurn.stop();
+		routineMove.stop();
 		animPlayer.transitionTo(clipIdle,transitionTime);
 		bMoving = false;
 	}

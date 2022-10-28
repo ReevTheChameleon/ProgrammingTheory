@@ -2,6 +2,8 @@ using UnityEngine;
 using Chameleon;
 using System.Collections;
 using System;
+using TMPro;
+using UnityEngine.InputSystem;
 
 public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] ObjectPooler poolerRoom;
@@ -35,7 +37,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	private Material matCover;
 
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
-	
+
 	protected override void Awake(){
 		base.Awake();
 		/* For longer sequence, you can either use Linear Congruence Generator (a^x=b mod p)
@@ -70,7 +72,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		//);
 		//gCover.SetActive(false);
 	}
-	void Update(){
+	//void Update(){
 		//if(Keyboard.current.eKey.wasPressedThisFrame){
 		//	//int[] aSavedDigit = new int[3];
 		//	//System.Array.Copy(aDigitCurrent,aSavedDigit,3);
@@ -95,7 +97,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		//else if(Keyboard.current.dKey.wasPressedThisFrame){
 		//	StartCoroutine(changeRoom(0));
 		//}
-	}
+	//}
+//--------------------------------------------------------------------------------------------
+	#region ROOM
 	public int getOppositeDirection(int direction){
 		return (direction+3)%6;
 	}
@@ -143,6 +147,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 				if(i != roomDataNeighbor.connectDirection)
 					roomDataNeighbor.aGDoor[i].SetActive(false);
 			}
+			roomDataNeighbor.aGDoor[roomDataNeighbor.connectDirection]
+				.GetComponent<IDoor>().reset();
 			roomDataNeighbor.gRoom.SetActive(false);
 			roomDataNeighbor.gRoom = null;
 		}
@@ -213,57 +219,21 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		);
 		return gDoor;
 	}
-	//private IEnumerator rfChangeRoom(int direction){
-	//	updateRoomNumber(direction);
-	//	GameObject gRoomSpawn = spawnRoom(getRoomOffset(direction),aDigitCurrent);
-	//	gCover.transform.localEulerAngles = new Vector3(
-	//		0.0f,
-	//		-direction*60.0f,
-	//		0.0f
-	//	);
-	//	Vector3 vRoomSpawnPos = gRoomSpawn.transform.position;
-	//	gCover.transform.setPosition(
-	//		x:vRoomSpawnPos.x,
-	//		z:vRoomSpawnPos.z
-	//	);
-	//	gCover.SetActive(true);
-	//	yield return StartCoroutine(matCover.tweenAlpha(
-	//		1.0f,0.0f,coverFadeDuration)
-	//	);
-	//	yield return StartCoroutine(Camera.main.transform.tweenPosition(
-	//		Camera.main.transform.position,
-	//		new Vector3(vRoomSpawnPos.x,Camera.main.transform.position.y,vRoomSpawnPos.z),
-	//		panDuration)
-	//	);
-	//	gCover.transform.setPosition(x:0.0f,z:0.0f);
-	//	yield return StartCoroutine(matCover.tweenAlpha(
-	//		0.0f,1.0f,coverFadeDuration)
-	//	);
-	//	gCover.SetActive(false);
-	//	gRoomCurrent.SetActive(false);
-	//	gRoomCurrent = gRoomSpawn;
-	//	gRoomCurrent.transform.position = Vector3.zero;
-	//	Camera.main.transform.setPosition(x:0.0f,z:0.0f);
-	//	gPlayer.transform.Translate(-vRoomSpawnPos);
-	//}
-	//public void changeRoom(int direction){
-	//	routineChangeRoom.start(this,rfChangeRoom(direction));
-	//}
-
-	//#if UNITY_EDITOR
-	//[UnityEditor.CustomEditor(typeof(SceneMainManager))]
-	//class SceneMainManagerEditor : UnityEditor.Editor{
-	//	private SceneMainManager targetAs;
-	//	void OnEnable(){
-	//		targetAs = (SceneMainManager)target;
-	//	}
-	//	public override void OnInspectorGUI(){
-	//		DrawDefaultInspector();
-	//		if(GUILayout.Button("Generate Room"))
-	//			((SceneMainManager)target).spawnRoom(Vector3.zero,targetAs.aDigitCurrent);
-	//	}
-	//}
-	//#endif
+	#endregion
+//--------------------------------------------------------------------------------------------
+	#region FOOTER
+	private bool bShow = false;
+	void Update(){
+		if(Keyboard.current.spaceKey.wasPressedThisFrame){
+			if(!FooterManager.Instance.IsShowing)
+				FooterManager.Instance.showFooter(new string[]{
+					"Hello, my name is Reev the Chameleon",
+					"This is an example game",
+				});
+			else
+				FooterManager.Instance.stepFooter();
+		}
+	}
+	#endregion
+//--------------------------------------------------------------------------------------------
 }
-
-

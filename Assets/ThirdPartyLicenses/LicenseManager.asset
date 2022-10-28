@@ -19,3 +19,15 @@ MonoBehaviour:
     licenseURL: http://scripts.sil.org/OFL
     licenseFile: {fileID: 4900000, guid: 9fddeaebeba66694294273e9351c0c1d, type: 3}
     note: 
+  - asset: {fileID: 12800000, guid: a5c9762d0484ca348b2fabdde827e4a6, type: 3}
+    copyrightText: Copyright 2016 The Fredoka Project Authors (https://github.com/hafontia/Fredoka-One)
+    licenseType: SIL Open Font License, Version 1.1
+    licenseURL: http://scripts.sil.org/OFL
+    licenseFile: {fileID: 4900000, guid: 9fddeaebeba66694294273e9351c0c1d, type: 3}
+    note: 
+  - asset: {fileID: 12800000, guid: a502d0a9721d721448e5c4552c74a502, type: 3}
+    copyrightText: Copyright (c) 2011, Juan Pablo del Peral (juan@huertatipografica.com.ar)
+    licenseType: SIL Open Font License, Version 1.1
+    licenseURL: http://scripts.sil.org/OFL
+    licenseFile: {fileID: 4900000, guid: 9fddeaebeba66694294273e9351c0c1d, type: 3}
+    note: with Reserved Font Names "Acme"
