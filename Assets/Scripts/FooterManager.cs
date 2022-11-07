@@ -25,7 +25,7 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 			footerTransitionTime,
 			dMapping: (float t)=>{return Mathf.SmoothStep(0.0f,1.0f,t);}
 		);
-		subitrTypewrite = txtFooter.typewrite("",typewriteSpeed);
+		subitrTypewrite = txtFooter.typewrite(typewriteSpeed);
 	}
 	void Start(){
 		rtFooter.anchoredPosition = v2AnchoredPosHide;

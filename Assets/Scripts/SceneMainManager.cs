@@ -36,6 +36,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] float panDuration;
 	private Material matCover;
 
+	[SerializeField] ObjectPooler poolerBalloon;
+	public ObjectPooler PoolerBalloon{ get{return poolerBalloon;} }
+
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
 
 	protected override void Awake(){
@@ -222,7 +225,6 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	#endregion
 //--------------------------------------------------------------------------------------------
 	#region FOOTER
-	private bool bShow = false;
 	void Update(){
 		if(Keyboard.current.spaceKey.wasPressedThisFrame){
 			if(!FooterManager.Instance.IsShowing)
