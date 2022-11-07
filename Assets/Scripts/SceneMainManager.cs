@@ -36,10 +36,10 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] float panDuration;
 	private Material matCover;
 
-	[SerializeField] ObjectPooler poolerBalloon;
-	public ObjectPooler PoolerBalloon{ get{return poolerBalloon;} }
-
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
+
+	[SerializeField] CanvasGroup cvgBalloon;
+	public CanvasGroup CanvasGroupBalloon{ get{return cvgBalloon;} }
 
 	protected override void Awake(){
 		base.Awake();

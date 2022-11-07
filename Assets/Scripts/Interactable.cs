@@ -10,9 +10,10 @@ public class Interactable : MonoBehaviour{
 	//[SerializeField] string textCommand;
 	//[SerializeField] Collider cBound;
 	[Bakable] static string tagPlayer = "Player";
-
+	[Bakable] static float fadeTime = 0.25f;
 	[SerializeField][ShowPosition("Balloon")] Vector3 vBallonPos;
-	private CanvasGroupFader canvasGroupFader;
+	private LoneCoroutine routineFade;
+	private CanvasGroup cvgBalloon;
 
 	public static Interactable Focused{get; private set;}
 	public static bool interact(){
@@ -22,25 +23,33 @@ public class Interactable : MonoBehaviour{
 		}
 		return false;
 	}
+	void Awake(){
+		cvgBalloon = SceneMainManager.Instance.CanvasGroupBalloon;
+		routineFade = new LoneCoroutine(
+			this,
+			cvgBalloon.tweenAlpha(
+				0.0f,1.0f,fadeTime,
+				dOnDone:(float t)=>{
+					if(routineFade.getItr<TweenRoutineUnit>().bReverse)
+						cvgBalloon.gameObject.SetActive(false);
+				}
+			)
+		);
+	}
 	void OnTriggerEnter(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = this;
-			if(!canvasGroupFader || !canvasGroupFader.gameObject.activeInHierarchy)
-				canvasGroupFader = SceneMainManager.Instance.PoolerBalloon
-					.getObject(vBallonPos).GetComponentInChildren<CanvasGroupFader>(true); //include inactive (Credit: damdor, UF)
-			canvasGroupFader.fade(true);
-			//canvasGroupFader.gameObject.SetActive(true);
-			//routineFade.getItr<TweenRoutineUnit>().bReverse = false;
-			//routineFade.resume();
-			//canvasGroup.gameObject.SetActive(true);
+			cvgBalloon.transform.position = vBallonPos;
+			cvgBalloon.gameObject.SetActive(true);
+			routineFade.getItr<TweenRoutineUnit>().bReverse = false;
+			routineFade.resume();
 		} 
 	}
 	void OnTriggerExit(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = null;
-			canvasGroupFader.fade(false);
-			//routineFade.getItr<TweenRoutineUnit>().bReverse = true;
-			//routineFade.resume();
+			routineFade.getItr<TweenRoutineUnit>().bReverse = true;
+			routineFade.resume();
 		}
 	}
 	protected virtual void onInteracted(){ }
