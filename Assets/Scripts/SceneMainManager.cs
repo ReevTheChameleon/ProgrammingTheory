@@ -38,8 +38,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
 
-	[SerializeField] CanvasGroup cvgBalloon;
-	public CanvasGroup CanvasGroupBalloon{ get{return cvgBalloon;} }
+	[SerializeField] Canvas cvBalloon;
+	public Canvas CanvasBalloon{ get{return cvBalloon;} }
 
 	protected override void Awake(){
 		base.Awake();

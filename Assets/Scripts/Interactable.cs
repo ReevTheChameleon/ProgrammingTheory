@@ -6,14 +6,9 @@ using UnityEditor;
 
 [RequireComponent(typeof(Collider))]
 public class Interactable : MonoBehaviour{
-	//[SerializeField] string textFooter;
-	//[SerializeField] string textCommand;
-	//[SerializeField] Collider cBound;
 	[Bakable] static string tagPlayer = "Player";
-	[Bakable] static float fadeTime = 0.25f;
 	[SerializeField][ShowPosition("Balloon")] Vector3 vBallonPos;
-	private LoneCoroutine routineFade;
-	private CanvasGroup cvgBalloon;
+	private Canvas cvBalloon;
 
 	public static Interactable Focused{get; private set;}
 	public static bool interact(){
@@ -24,32 +19,19 @@ public class Interactable : MonoBehaviour{
 		return false;
 	}
 	void Awake(){
-		cvgBalloon = SceneMainManager.Instance.CanvasGroupBalloon;
-		routineFade = new LoneCoroutine(
-			this,
-			cvgBalloon.tweenAlpha(
-				0.0f,1.0f,fadeTime,
-				dOnDone:(float t)=>{
-					if(routineFade.getItr<TweenRoutineUnit>().bReverse)
-						cvgBalloon.gameObject.SetActive(false);
-				}
-			)
-		);
+		cvBalloon = SceneMainManager.Instance.CanvasBalloon;
 	}
 	void OnTriggerEnter(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = this;
-			cvgBalloon.transform.position = vBallonPos;
-			cvgBalloon.gameObject.SetActive(true);
-			routineFade.getItr<TweenRoutineUnit>().bReverse = false;
-			routineFade.resume();
+			cvBalloon.transform.position = vBallonPos;
+			cvBalloon.gameObject.SetActive(true);
 		} 
 	}
 	void OnTriggerExit(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = null;
-			routineFade.getItr<TweenRoutineUnit>().bReverse = true;
-			routineFade.resume();
+			cvBalloon.gameObject.SetActive(false);
 		}
 	}
 	protected virtual void onInteracted(){ }
