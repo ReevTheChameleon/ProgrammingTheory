@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+/[Aa]ssets/chm_Temp/
+/[Aa]ssets/chm_Temp.meta
+
