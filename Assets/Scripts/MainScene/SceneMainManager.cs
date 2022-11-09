@@ -5,6 +5,8 @@ using System;
 using TMPro;
 using UnityEngine.InputSystem;
 
+public enum eDigitType{Normal,Cow,Bull}
+
 public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] ObjectPooler poolerRoom;
 	[SerializeField] ObjectPooler[] aPoolerDoor;
@@ -39,8 +41,18 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
 
 	[SerializeField] Canvas cvBalloon;
-	public Canvas CanvasBalloon{ get{return cvBalloon;} }
+	public Canvas CanvasBallon{ get{return cvBalloon;} }
 
+	public eDigitType getDigitType(int digit,int index){
+		if(digit==aDigitExit[index])
+			return eDigitType.Bull;
+		else if(digit==aDigitExit[(index+1)%3] || digit==aDigitExit[(index+2)%3])
+			return eDigitType.Cow;
+		else
+			return eDigitType.Normal;
+	}
+//--------------------------------------------------------------------------------------------
+	#region MONOBEHAVIOUR FUNCTIONS
 	protected override void Awake(){
 		base.Awake();
 		/* For longer sequence, you can either use Linear Congruence Generator (a^x=b mod p)
@@ -65,6 +77,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		for(int i=0; i<6; ++i)
 			roomDataCurrent.aGDoor[i] = spawnDoor(roomDataCurrent.gRoom,0,i);
 		Debug.Log(aDigitExit[0]+" "+aDigitExit[1]+" "+aDigitExit[2]);
+		
+		Cursor.lockState = CursorLockMode.Locked;
 
 		//gCover.transform.position =
 		//	new Vector3(0.0f,rawRoomScaler.Height/2.0f,0.0f);
@@ -101,6 +115,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		//	StartCoroutine(changeRoom(0));
 		//}
 	//}
+	#endregion
 //--------------------------------------------------------------------------------------------
 	#region ROOM
 	public int getOppositeDirection(int direction){
@@ -159,15 +174,24 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	private GameObject spawnRoom(Vector3 vPosition,int[] aDigit){
 		GameObject gRoom = poolerRoom.getObject(vPosition);
 		DigitAligner digitAligner = gRoom.GetComponentInChildren<DigitAligner>();
+		DigitMessage digitMessage = gRoom.GetComponentInChildren<DigitMessage>();
+		eDigitType[] aDigitType = new eDigitType[3];
 		for(int i=0; i<3; ++i){
 			digitAligner.setDigit(i,aDigit[i]);
-			if(aDigit[i]==aDigitExit[i])
-				digitAligner.setMaterial(i,matBullDigit);
-			else if(aDigit[i]==aDigitExit[(i+1)%3] || aDigit[i]==aDigitExit[(i+2)%3])
-				digitAligner.setMaterial(i,matCowDigit);
-			else
-				digitAligner.setMaterial(i,matNormalDigit);
+			aDigitType[i] = getDigitType(aDigit[i],i);
+			switch(aDigitType[i]){
+				case eDigitType.Bull: digitAligner.setMaterial(i,matBullDigit); break;
+				case eDigitType.Cow: digitAligner.setMaterial(i,matCowDigit); break;
+				case eDigitType.Normal: digitAligner.setMaterial(i,matNormalDigit); break;
+			}
+			//if(aDigit[i]==aDigitExit[i])
+			//	digitAligner.setMaterial(i,matBullDigit);
+			//else if(aDigit[i]==aDigitExit[(i+1)%3] || aDigit[i]==aDigitExit[(i+2)%3])
+			//	digitAligner.setMaterial(i,matCowDigit);
+			//else
+			//	digitAligner.setMaterial(i,matNormalDigit);
 		}
+		digitMessage.initText(aDigit,aDigitType);
 		return gRoom;
 	}
 	private Vector3 getRoomOffset(int direction){
@@ -225,17 +249,17 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	#endregion
 //--------------------------------------------------------------------------------------------
 	#region FOOTER
-	void Update(){
-		if(Keyboard.current.spaceKey.wasPressedThisFrame){
-			if(!FooterManager.Instance.IsShowing)
-				FooterManager.Instance.showFooter(new string[]{
-					"Hello, my name is Reev the Chameleon",
-					"This is an example game",
-				});
-			else
-				FooterManager.Instance.stepFooter();
-		}
-	}
+	//void Update(){
+	//	if(Keyboard.current.spaceKey.wasPressedThisFrame){
+	//		if(!FooterManager.Instance.IsShowing)
+	//			FooterManager.Instance.showFooter(new string[]{
+	//				"Hello, my name is Reev the Chameleon",
+	//				"This is an example game",
+	//			});
+	//		else
+	//			FooterManager.Instance.stepFooter();
+	//	}
+	//}
 	#endregion
 //--------------------------------------------------------------------------------------------
 }

@@ -94,15 +94,11 @@ public class SceneStoryManager : LoneMonoBehaviour<SceneStoryManager>{
 		renderFeatureKawaseBlur.SetActive(false);
 		SceneManager.LoadSceneAsync(indexSceneMain);
 	}
+
+	#if UNITY_EDITOR || DEVELOPMENT_BUILD
 	void Update(){
-		if(Keyboard.current.spaceKey.wasPressedThisFrame)
-			txtStory.alpha = 0.5f;
 		if(Keyboard.current.xKey.wasPressedThisFrame)
-			txtStory.setVerticesAlpha(128);
-		if(Keyboard.current.rKey.wasPressedThisFrame){
-			txtStory.overrideColorTags = true;
-			txtStory.Rebuild(UnityEngine.UI.CanvasUpdate.LatePreRender);
-			txtStory.overrideColorTags = false;
-		}
+			advanceScene();
 	}
+	#endif
 }

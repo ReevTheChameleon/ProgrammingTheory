@@ -524,6 +524,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2548122531955977919}
   - component: {fileID: 823099995439011304}
+  - component: {fileID: 7387665625845552376}
+  - component: {fileID: 3845961812118352381}
   m_Layer: 0
   m_Name: DigitAligner
   m_TagString: Untagged
@@ -575,6 +577,33 @@ MonoBehaviour:
   digitDistance: 1.1
   fontSize: 16
   number: 000000000000000000000000
+--- !u!65 &7387665625845552376
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3859854447645077536}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.3000002, y: 1, z: 1.5}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3845961812118352381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3859854447645077536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eee06b85c3a3964c9cb745e0724fb64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vBallonPos: {x: 0, y: 5, z: 0}
+  lText: []
 --- !u!1 &4045997703927285011
 GameObject:
   m_ObjectHideFlags: 0

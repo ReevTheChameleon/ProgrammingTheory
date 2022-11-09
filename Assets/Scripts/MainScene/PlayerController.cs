@@ -19,24 +19,29 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] AnimationClip clipIdle;
 	[SerializeField] AnimationClip clipRun;
 	[SerializeField] float transitionTime = 0.2f;
+	[SerializeField] float turnSpeed;
 	private Vector2 v2Direction;
 	private LoneCoroutine routineMove = new LoneCoroutine();
 	private const float RUNSPEED = 2.939501f/0.7f;
 	private bool bMoving;
 	private LoneCoroutine routineTurn = new LoneCoroutine();
 	private float targetFacingAngle;
+	//private Vector3 vMoveDirection;
 
-	[Header("inputLook")]
+	[Header("InputLook")]
 	[SerializeField] InputActionID actionIDLook;
 	[SerializeField] Transform tVCamTarget;
 	[SerializeField] Vector2 v2LookRangeVertical;
 	public float inputLookSensitivity;
 
-	[Header("inputZoom")]
+	[Header("InputZoom")]
 	[SerializeField] InputActionID actionIDZoom;
 	[SerializeField] ThirdPersonCameraControl cameraControl;
 	[SerializeField] Vector2 v2ZoomRange;
 	[SerializeField] float inputZoomSensitivity;
+
+	[Header("InputInteract")]
+	[SerializeField] InputActionID actionIDInteract;
 
 	protected override void Awake(){
 		base.Awake();
@@ -49,25 +54,25 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDMove].canceled += onInputIdle;
 		playerInput.actions[actionIDLook].performed += onInputLook;
 		playerInput.actions[actionIDZoom].performed += onInputZoom;
-		//routineTurn.evOnStop += unsubscribeRootMotionOverride;
+		playerInput.actions[actionIDInteract].performed += onInputInteract;
 	}
 	void OnDisable(){
 		playerInput.actions[actionIDMove].performed -= onInputMove;
 		playerInput.actions[actionIDMove].canceled -= onInputIdle;
 		playerInput.actions[actionIDLook].performed -= onInputLook;
 		playerInput.actions[actionIDZoom].performed -= onInputZoom;
+		playerInput.actions[actionIDInteract].performed += onInputInteract;
 		routineTurn.stop();
-		//routineTurn.evOnStop -= unsubscribeRootMotionOverride;
 	}
-	private Vector3 vMoveDirection;
-	[SerializeField] float turnSpeed;
-	private Action dRedirectRootMotion;
+	void Start(){
+		animPlayer.play(clipIdle);
+	}
 	private void onInputMove(InputAction.CallbackContext context){
 		v2Direction = context.ReadValue<Vector2>();
 		targetFacingAngle = v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f; //delta from tVCamTarget forward
 		routineTurn.start(this,rfTurn(targetFacingAngle));
 		routineMove.start(this,rfMove());
-		vMoveDirection = Quaternion.Euler(0.0f,-targetFacingAngle,0.0f)*tVCamTarget.forward;
+		//vMoveDirection = Quaternion.Euler(0.0f,-targetFacingAngle,0.0f)*tVCamTarget.forward;
 		//dRedirectRootMotion = ()=>{redirectRootMotion(vDirection);};
 		//animPlayer.evOnLateUpdate += dRedirectRootMotion;
 		//faceDirection(v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f);
@@ -100,7 +105,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		/* Trick from Unity tutorial */
 		transform.setEulerY(tVCamTarget.eulerAngles.y-angle);
 		tVCamTarget.setLocalEulerY(angle);
-		vMoveDirection = transform.rotation*Vector3.forward;
+		//vMoveDirection = transform.rotation*Vector3.forward;
 	}
 	private void onInputZoom(InputAction.CallbackContext context){
 		float delta = inputZoomSensitivity*context.ReadValue<float>(); //usually Windows is +/-120
@@ -133,6 +138,9 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 				(Quaternion.Euler(0.0f,-targetFacingAngle,0.0f)*tVCamTarget.forward);
 			yield return wait;
 		}
+	}
+	private void onInputInteract(InputAction.CallbackContext context){
+		Interactable.Focused?.onInteracted();
 	}
 }
 

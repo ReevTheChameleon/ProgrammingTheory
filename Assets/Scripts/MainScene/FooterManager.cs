@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using Chameleon;
 using System.Collections;
+using System.Collections.Generic;
 
 public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	[SerializeField] TextMeshProUGUI txtFooter;
@@ -17,7 +18,9 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	private Trigger triggerSkip = new Trigger();
 	
 	public bool IsShowing{get; private set;} = false;
+	public bool IsDone{ get{return !routineFooter.IsRunning;} }
 	protected override void Awake(){
+		base.Awake();
 		rtFooter = (RectTransform)transform;
 		subitrTweenInFooter = rtFooter.tweenAnchoredPosition(
 			v2AnchoredPosHide,
@@ -30,14 +33,14 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	void Start(){
 		rtFooter.anchoredPosition = v2AnchoredPosHide;
 	}
-	private IEnumerator rfShowFooter(string[] aText){
+	private IEnumerator rfShowFooter(List<string> lText,int textCount=-1){
 		IsShowing = true;
 		txtFooter.text = "";
 		subitrTweenInFooter.bReverse = false;
 		yield return subitrTweenInFooter;
 
-		for(int i=0; i<aText.Length; ++i){
-			subitrTypewrite.Text = aText[i];
+		for(int i=0; i<lText.Count; ++i){
+			subitrTypewrite.Text = lText[i];
 			while(subitrTypewrite.MoveNext()){
 				yield return subitrTypewrite.Current;
 				if(triggerSkip){
@@ -46,19 +49,23 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 					break;
 				}
 			}
+			if(i==lText.Count-1) //for last text, no need to wait for skip
+				yield break;
 			/* This is for the best, because stopping and resuming ALLOCATES
 			more memory on StartCoroutine, while this check, although done
 			every frame, eats very small performance. */
 			while(!triggerSkip)
 				yield return null;
 		}
-
-		subitrTweenInFooter.bReverse = true;
-		yield return subitrTweenInFooter;
-		IsShowing = false;
+		//hideFooter();
 	}
-	public void showFooter(string[] aText){
-		routineFooter.start(this,rfShowFooter(aText));
+	public void showFooter(List<string> lText){
+		routineFooter.start(this,rfShowFooter(lText));
+	}
+	public void hideFooter(){
+		IsShowing = false;
+		subitrTweenInFooter.bReverse = true;
+		routineFooter.start(this,subitrTweenInFooter);
 	}
 	public void stepFooter(){
 		triggerSkip.set();

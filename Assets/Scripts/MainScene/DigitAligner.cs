@@ -5,6 +5,7 @@ using TMPro;
 using UnityEditor;
 #endif
 
+[RequireComponent(typeof(DigitMessage))]
 public class DigitAligner : MonoBehaviour{
 	/* These have to be direct children of DigitAligner.gameObject */
 	[SerializeField] TMP_Text[] aDigit;
@@ -16,7 +17,12 @@ public class DigitAligner : MonoBehaviour{
 	[SerializeField] float fontSize;
 	[SerializeField][Range(0,9)] int[] number;
 	#endif
+	
+	DigitMessage digitMessage;
 
+	void Awake(){
+		digitMessage = GetComponent<DigitMessage>();
+	}
 	//Let throw if aDigit/format is not correct because game can't run with that
 	public int getDigit(int index){
 		return int.Parse(aDigit[index].text);
@@ -61,7 +67,10 @@ public class DigitAligner : MonoBehaviour{
 			if(aDigit[0]) aDigit[0].rectTransform.setHeight(digitHeight);
 			if(aDigit[1]) aDigit[1].rectTransform.setHeight(digitHeight);
 			if(aDigit[2]) aDigit[2].rectTransform.setHeight(digitHeight);
-		}; 
+		};
+		BoxCollider cTrigger = GetComponentInChildren<BoxCollider>();
+		cTrigger.center = Vector3.zero;
+		cTrigger.size = new Vector3(3*digitDistance,1.0f,digitHeight);
 	}
 	#endif
 }

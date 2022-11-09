@@ -1,13 +1,11 @@
-using UnityEngine;
 #if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
-#endif
 using Chameleon;
 
 [RemoveOnBuild]
 public class TransformRevealer : MonoBehaviour{}
 
-#if UNITY_EDITOR
 [CustomEditor(typeof(TransformRevealer))]
 class TransformRevealerEditor : Editor{
 	private TransformRevealer targetAs;
@@ -18,6 +16,8 @@ class TransformRevealerEditor : Editor{
 		bLocal = Tools.pivotRotation==PivotRotation.Local;
 	}
 	public override void OnInspectorGUI(){
+		if(!EditorGUIUtility.wideMode)
+			EditorGUIUtility.wideMode = true;
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Transform",EditorStyles.boldLabel);
 		if(EditorHelper.contextClicked(GUILayoutUtility.GetLastRect())){
