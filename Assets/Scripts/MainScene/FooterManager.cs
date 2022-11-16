@@ -10,6 +10,8 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	[SerializeField][GrayOnPlay] Vector2 v2AnchoredPosHide;
 	[SerializeField][GrayOnPlay] float footerTransitionTime;
 	[SerializeField][GrayOnPlay] float typewriteSpeed;
+	[SerializeField] GameObject gContinue;
+	[SerializeField] float cooldownSkip;
 	
 	RectTransform rtFooter;
 	private LoneCoroutine routineFooter = new LoneCoroutine();
@@ -37,18 +39,25 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 		IsShowing = true;
 		txtFooter.text = "";
 		subitrTweenInFooter.bReverse = false;
+		gContinue.SetActive(false);
 		yield return subitrTweenInFooter;
 
+		Cooldown cooldown = new Cooldown();
 		for(int i=0; i<lText.Count; ++i){
 			subitrTypewrite.Text = lText[i];
+			cooldown.set(cooldownSkip);
 			while(subitrTypewrite.MoveNext()){
 				yield return subitrTypewrite.Current;
-				if(triggerSkip){
+				if(triggerSkip && !cooldown){
 					triggerSkip.clear();
 					subitrTypewrite.skip();
 					break;
 				}
 			}
+			cooldown.set(cooldownSkip);
+			while(cooldown)
+				yield return null;
+			gContinue.SetActive(true);
 			if(i==lText.Count-1) //for last text, no need to wait for skip
 				yield break;
 			/* This is for the best, because stopping and resuming ALLOCATES
@@ -56,6 +65,8 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 			every frame, eats very small performance. */
 			while(!triggerSkip)
 				yield return null;
+			gContinue.SetActive(false);
+			triggerSkip.clear();
 		}
 		//hideFooter();
 	}

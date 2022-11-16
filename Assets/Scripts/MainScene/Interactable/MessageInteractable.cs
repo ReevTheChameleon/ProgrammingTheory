@@ -5,7 +5,6 @@ public class MessageInteractable : Interactable{
 	[SerializeField][TextArea] protected List<string> lText = new List<string>();
 
 	public override void onInteracted(){
-		Debug.Log("Here");
 		FooterManager footerManager = FooterManager.Instance;
 		if(!footerManager.IsShowing){
 			footerManager.showFooter(lText);

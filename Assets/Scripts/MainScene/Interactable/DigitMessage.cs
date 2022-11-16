@@ -28,24 +28,29 @@ public class DigitMessage : MessageInteractable{
 		if(bullCount==0 && cowCount==0)
 			lText.Add("These numbers do not seem to mean anything...");
 		else{
+			eDigitType prevDigitType = eDigitType.Normal;
+			bool bAlso = false;
 			for(int i=0; i<3; ++i){
-				bool bAlso = (i>0 && aDigitType[i-1]==aDigitType[i]);
 				switch(aDigitType[i]){
 					case eDigitType.Bull:
+						bAlso = prevDigitType==eDigitType.Bull;
 						lText.Add("Number <color="+sRichTextColorBull+">"+
-							aDigit[i]+"</color>" + (bAlso ? " also " : "") +
-							" feels strongly linked to the exit...");
+							aDigit[i]+"</color> " + (bAlso ? "also" : "") +
+							" somehow feels strongly linked to the exit...");
+						prevDigitType = aDigitType[i];
 						break;
 					case eDigitType.Cow:
+						bAlso = prevDigitType==eDigitType.Cow;
 						lText.Add("Number <color="+sRichTextColorCow+">"
-							+aDigit[i]+"</color>" + (bAlso ? " also " : "") +
+							+aDigit[i]+"</color> " + (bAlso ? "also" : "") +
 							" seems to hint something about the exit, but it"+
 							(bAlso?", too,":"") + " looks misplaced...");
+						prevDigitType = aDigitType[i];
 						break;
 				}
 			}
 			if(bullCount == 3)
-				lText.Add("Maybe this is <b>the room</b>!?");
+				lText.Add("Maybe this is <color=yellow>the room</color>!?");
 		}
 	}
 }

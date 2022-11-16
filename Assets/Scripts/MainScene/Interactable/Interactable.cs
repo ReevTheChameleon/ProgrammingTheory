@@ -11,7 +11,6 @@ so it is not implemented. */
 public abstract class Interactable : MonoBehaviour{
 	[Bakable][Tag] const string tagPlayer = "Player";
 	[SerializeField][ShowPosition(true,"Balloon")] protected Vector3 vBallonPos;
-	private static Canvas cvBalloon;
 
 	public static Interactable Focused{get; private set;} = null;
 	public static bool interact(){
@@ -21,13 +20,10 @@ public abstract class Interactable : MonoBehaviour{
 		}
 		return false;
 	}
-	[RuntimeInitializeOnLoadMethod]
-	private static void onLoad(){
-		cvBalloon = SceneMainManager.Instance.CanvasBallon;
-	}
 	protected virtual void OnTriggerEnter(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = this;
+			Canvas cvBalloon = SceneMainManager.Instance.CanvasBallon;
 			cvBalloon.transform.position = transform.TransformPoint(vBallonPos);
 			cvBalloon.gameObject.SetActive(true);
 		} 
@@ -35,7 +31,7 @@ public abstract class Interactable : MonoBehaviour{
 	protected virtual void OnTriggerExit(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = null;
-			cvBalloon.gameObject.SetActive(false);
+			SceneMainManager.Instance.CanvasBallon.gameObject.SetActive(false);
 		}
 	}
 	public abstract void onInteracted();

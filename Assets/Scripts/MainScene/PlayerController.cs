@@ -142,6 +142,19 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	private void onInputInteract(InputAction.CallbackContext context){
 		Interactable.Focused?.onInteracted();
 	}
+
+	public void setActiveInputMovement(bool bEnable){
+		if(bEnable){
+			playerInput.actions[actionIDMove].Enable();
+			playerInput.actions[actionIDLook].Enable();
+			playerInput.actions[actionIDZoom].Enable();
+		}
+		else{
+			playerInput.actions[actionIDMove].Disable();
+			playerInput.actions[actionIDLook].Disable();
+			playerInput.actions[actionIDZoom].Disable();
+		}
+	}
 }
 
 //#if UNITY_EDITOR

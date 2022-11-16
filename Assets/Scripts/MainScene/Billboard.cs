@@ -11,7 +11,8 @@ public class Billboard : MonoBehaviour{
 		tCamera = Camera.main.transform;
 	}
 	void LateUpdate(){
-		transform.rotation = Quaternion.LookRotation(-tCamera.forward,tCamera.up);
+		transform.lookDirection(-tCamera.forward,tCamera.up);
+		//transform.rotation = Quaternion.LookRotation(-tCamera.forward,tCamera.up);
 		//transform.LookAt(tCamera,tCamera.up); //this method distort if near edge
 		//if(playerUpdateMethod == eUpdateMethod.LateUpdate)
 		//	transform.localScale = 

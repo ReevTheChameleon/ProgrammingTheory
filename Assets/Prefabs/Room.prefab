@@ -226,7 +226,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -477,7 +477,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -899,7 +899,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 4
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1059,7 +1059,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Doorway
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9058759375278784361, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
@@ -1215,7 +1215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Doorway
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9058759375278784361, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
@@ -1293,7 +1293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Doorway
       objectReference: {fileID: 0}
     - target: {fileID: 9058759376329783328, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1427,7 +1427,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Doorway
       objectReference: {fileID: 0}
     - target: {fileID: 9058759376329783328, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1561,7 +1561,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Doorway
       objectReference: {fileID: 0}
     - target: {fileID: 9058759376329783328, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1695,7 +1695,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Doorway
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9058759375278784361, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}

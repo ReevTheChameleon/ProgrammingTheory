@@ -4,6 +4,7 @@ using System.Collections;
 using System;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public enum eDigitType{Normal,Cow,Bull}
 
@@ -79,42 +80,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		Debug.Log(aDigitExit[0]+" "+aDigitExit[1]+" "+aDigitExit[2]);
 		
 		Cursor.lockState = CursorLockMode.Locked;
-
-		//gCover.transform.position =
-		//	new Vector3(0.0f,rawRoomScaler.Height/2.0f,0.0f);
-		//gCover.transform.localScale = new Vector3(
-		//	roomSize*sqrt3,
-		//	rawRoomScaler.Height+0.2f, //offset a bit
-		//	roomSize*2.0f
-		//);
-		//gCover.SetActive(false);
+		StartCoroutine(rfStartSequence());
 	}
-	//void Update(){
-		//if(Keyboard.current.eKey.wasPressedThisFrame){
-		//	//int[] aSavedDigit = new int[3];
-		//	//System.Array.Copy(aDigitCurrent,aSavedDigit,3);
-		//	//for(int i=0; i<6; ++i){
-		//	//	changeRoom(i);
-		//	//	System.Array.Copy(aSavedDigit,aDigitCurrent,3);
-		//	//}
-		//	StartCoroutine(changeRoom(1));
-		//}
-		//else if(Keyboard.current.wKey.wasPressedThisFrame){
-		//	StartCoroutine(changeRoom(2));
-		//}
-		//else if(Keyboard.current.qKey.wasPressedThisFrame){
-		//	StartCoroutine(changeRoom(3));
-		//}
-		//else if(Keyboard.current.aKey.wasPressedThisFrame){
-		//	StartCoroutine(changeRoom(4));
-		//}
-		//else if(Keyboard.current.sKey.wasPressedThisFrame){
-		//	StartCoroutine(changeRoom(5));
-		//}
-		//else if(Keyboard.current.dKey.wasPressedThisFrame){
-		//	StartCoroutine(changeRoom(0));
-		//}
-	//}
 	#endregion
 //--------------------------------------------------------------------------------------------
 	#region ROOM
@@ -248,18 +215,15 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	}
 	#endregion
 //--------------------------------------------------------------------------------------------
-	#region FOOTER
-	//void Update(){
-	//	if(Keyboard.current.spaceKey.wasPressedThisFrame){
-	//		if(!FooterManager.Instance.IsShowing)
-	//			FooterManager.Instance.showFooter(new string[]{
-	//				"Hello, my name is Reev the Chameleon",
-	//				"This is an example game",
-	//			});
-	//		else
-	//			FooterManager.Instance.stepFooter();
-	//	}
-	//}
+	#region START SEQUENCE
+	[SerializeField] Image imgScreenCover;
+	[SerializeField] float durationFade;
+
+	private IEnumerator rfStartSequence(){
+		PlayerController.Instance.setActiveInputMovement(false);
+		yield return imgScreenCover.tweenAlpha(0.0f,0.0f,durationFade);
+		PlayerController.Instance.setActiveInputMovement(true);
+	}
 	#endregion
 //--------------------------------------------------------------------------------------------
 }

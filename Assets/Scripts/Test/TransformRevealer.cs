@@ -10,6 +10,7 @@ public class TransformRevealer : MonoBehaviour{}
 class TransformRevealerEditor : Editor{
 	private TransformRevealer targetAs;
 	private bool bLocal;
+	private bool bRectTransformRelative;
 
 	void OnEnable(){
 		targetAs = target as TransformRevealer;
@@ -132,7 +133,7 @@ class TransformRevealerEditor : Editor{
 				contextMenu.ShowAsContext();
 			}
 		}
-		else{
+		else{ //!bLocal
 			EditorGUI.BeginChangeCheck();
 			vTemp = EditorGUILayout.Vector3Field(
 				"Position",
@@ -214,6 +215,7 @@ class TransformRevealerEditor : Editor{
 		--EditorGUI.indentLevel;
 
 		if(targetAs.transform is RectTransform){
+			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("RectTransform",EditorStyles.boldLabel);
 			if(EditorHelper.contextClicked(GUILayoutUtility.GetLastRect())){
 				GenericMenu contextMenu = new GenericMenu();
@@ -231,6 +233,8 @@ class TransformRevealerEditor : Editor{
 				);
 				contextMenu.ShowAsContext();
 			}
+			EditorGUILayout.EndHorizontal();
+
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight*5.0f);
 			Rect rectField = GUILayoutUtility.GetLastRect();
 			float singleLineHeight = EditorGUIUtility.singleLineHeight;
@@ -268,6 +272,7 @@ class TransformRevealerEditor : Editor{
 			}
 
 			rectField.y += singleLineHeight;
+			EditorGUI.BeginChangeCheck();
 			v2Temp = EditorGUI.Vector2Field(
 				rectField,
 				"Anchor Max",
@@ -295,33 +300,39 @@ class TransformRevealerEditor : Editor{
 			}
 			
 			rectField.y += singleLineHeight;
-			v2Temp = EditorGUI.Vector2Field(
-				rectField,
-				"Anchored Position",
-				((RectTransform)targetAs.transform).anchoredPosition
-			);
-			if(EditorGUI.EndChangeCheck()){
-				Undo.RecordObject(targetAs.transform,"Change RectTransform");
-				((RectTransform)targetAs.transform).anchoredPosition = v2Temp;
+			EditorGUI.BeginChangeCheck();
+			if(bRectTransformRelative){
 			}
-			if(EditorHelper.contextClicked(rectField)){
-				GenericMenu contextMenu = EditorHelper.createCopyPasteContextMenu(
-					targetAs.transform,
-					nameof(RectTransform.anchoredPosition)
+			else{
+				v2Temp = EditorGUI.Vector2Field(
+					rectField,
+					"Anchored Position",
+					((RectTransform)targetAs.transform).anchoredPosition
 				);
-				contextMenu.AddSeparator("");
-				contextMenu.AddItem(
-					new GUIContent("Reset (&R)"),
-					false,
-					()=>{
-						Undo.RecordObject(targetAs.transform,"Change RectTransform");
-						((RectTransform)targetAs.transform).anchoredPosition = Vector2.zero;
-					}
-				);
-				contextMenu.ShowAsContext();
+				if(EditorGUI.EndChangeCheck()){
+					Undo.RecordObject(targetAs.transform,"Change RectTransform");
+					((RectTransform)targetAs.transform).anchoredPosition = v2Temp;
+				}
+				if(EditorHelper.contextClicked(rectField)){
+					GenericMenu contextMenu = EditorHelper.createCopyPasteContextMenu(
+						targetAs.transform,
+						nameof(RectTransform.anchoredPosition)
+					);
+					contextMenu.AddSeparator("");
+					contextMenu.AddItem(
+						new GUIContent("Reset (&R)"),
+						false,
+						()=>{
+							Undo.RecordObject(targetAs.transform,"Change RectTransform");
+							((RectTransform)targetAs.transform).anchoredPosition = Vector2.zero;
+						}
+					);
+					contextMenu.ShowAsContext();
+				}
 			}
 			
 			rectField.y += singleLineHeight;
+			EditorGUI.BeginChangeCheck();
 			v2Temp = EditorGUI.Vector2Field(
 				rectField,
 				"Size Delta",
@@ -347,7 +358,9 @@ class TransformRevealerEditor : Editor{
 				);
 				contextMenu.ShowAsContext();
 			}
+			
 			rectField.y += singleLineHeight;
+			EditorGUI.BeginChangeCheck();
 			v2Temp = EditorGUI.Vector2Field(
 				rectField,
 				"Pivot",
