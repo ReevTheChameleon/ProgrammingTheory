@@ -26,12 +26,14 @@ public abstract class Interactable : MonoBehaviour{
 			Canvas cvBalloon = SceneMainManager.Instance.CanvasBallon;
 			cvBalloon.transform.position = transform.TransformPoint(vBallonPos);
 			cvBalloon.gameObject.SetActive(true);
+			HeadLookController.Instance.setHeadLookTarget(transform);
 		} 
 	}
 	protected virtual void OnTriggerExit(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			Focused = null;
 			SceneMainManager.Instance.CanvasBallon.gameObject.SetActive(false);
+			HeadLookController.Instance.setHeadLookTarget(null);
 		}
 	}
 	public abstract void onInteracted();

@@ -21,9 +21,14 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	
 	public bool IsShowing{get; private set;} = false;
 	public bool IsDone{ get{return !routineFooter.IsRunning;} }
-	protected override void Awake(){
-		base.Awake();
+
+	void Start(){
+		/* Need to initialize here to be sure that all images sizes are already set. */
 		rtFooter = (RectTransform)transform;
+		v2AnchoredPosShow = rtFooter.anchoredPosition;
+		v2AnchoredPosHide = v2AnchoredPosShow;
+		v2AnchoredPosHide.y -= rtFooter.rect.height;
+		rtFooter.anchoredPosition = v2AnchoredPosHide;
 		subitrTweenInFooter = rtFooter.tweenAnchoredPosition(
 			v2AnchoredPosHide,
 			v2AnchoredPosShow,
@@ -31,9 +36,6 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 			dMapping: (float t)=>{return Mathf.SmoothStep(0.0f,1.0f,t);}
 		);
 		subitrTypewrite = txtFooter.typewrite(typewriteSpeed);
-	}
-	void Start(){
-		rtFooter.anchoredPosition = v2AnchoredPosHide;
 	}
 	private IEnumerator rfShowFooter(List<string> lText,int textCount=-1){
 		IsShowing = true;

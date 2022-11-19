@@ -155,6 +155,12 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			playerInput.actions[actionIDZoom].Disable();
 		}
 	}
+	[SerializeField] AnimationClip clipPickup;
+	void Update(){
+		if(Keyboard.current.xKey.wasPressedThisFrame)
+			animPlayer.play(clipPickup);
+	}
+
 }
 
 //#if UNITY_EDITOR
