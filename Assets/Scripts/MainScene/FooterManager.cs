@@ -17,7 +17,7 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	private LoneCoroutine routineFooter = new LoneCoroutine();
 	private TweenRoutineUnit subitrTweenInFooter;
 	private TypewriteRoutineUnit subitrTypewrite;
-	private Trigger triggerSkip = new Trigger();
+	private FrameTrigger triggerSkip = new FrameTrigger();
 	
 	public bool IsShowing{get; private set;} = false;
 	public bool IsDone{ get{return !routineFooter.IsRunning;} }
@@ -81,6 +81,7 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 		routineFooter.start(this,subitrTweenInFooter);
 	}
 	public void stepFooter(){
+		Debug.LogWarning("Here step");
 		triggerSkip.set();
 	}
 }

@@ -37,11 +37,18 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[Header("InputZoom")]
 	[SerializeField] InputActionID actionIDZoom;
 	[SerializeField] ThirdPersonCameraControl cameraControl;
-	[SerializeField] Vector2 v2ZoomRange;
+	[SerializeField] Vector2 rangeZoom;
 	[SerializeField] float inputZoomSensitivity;
 
 	[Header("InputInteract")]
 	[SerializeField] InputActionID actionIDInteract;
+	[SerializeField] AnimationClip clipLeftTurn90;
+	[SerializeField] AnimationClip clipRightTurn90; //Unity cannot mirror generic rig, so need this
+	[SerializeField] Vector2 rangeTurnWeight;
+	[SerializeField] float turnTime;
+	[SerializeField] AnimationClip clipPickup;
+
+	public Transform TCamTarget{get {return tVCamTarget;} }
 
 	protected override void Awake(){
 		base.Awake();
@@ -112,8 +119,8 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		cameraControl.targetCameraDistance =
 			Mathf.Clamp(
 				cameraControl.targetCameraDistance + delta,
-				v2ZoomRange.x,
-				v2ZoomRange.y
+				rangeZoom.x,
+				rangeZoom.y
 			)
 		;
 	}
@@ -145,22 +152,62 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 
 	public void setActiveInputMovement(bool bEnable){
 		if(bEnable){
+			routineTurn.stop();
+			animPlayer.transitionTo(clipIdle,transitionTime);
 			playerInput.actions[actionIDMove].Enable();
 			playerInput.actions[actionIDLook].Enable();
 			playerInput.actions[actionIDZoom].Enable();
 		}
 		else{
+			routineMove.stop();
+			routineTurn.stop();
+			animPlayer.transitionTo(clipIdle,transitionTime);
 			playerInput.actions[actionIDMove].Disable();
 			playerInput.actions[actionIDLook].Disable();
 			playerInput.actions[actionIDZoom].Disable();
 		}
 	}
-	[SerializeField] AnimationClip clipPickup;
+	public void turnToward(Transform tTarget){
+		routineTurn.start(this,rfTurnToward(tTarget));
+	}
+	private IEnumerator rfTurnToward(Transform tTarget){
+		Vector3 vDirection = tTarget.position-transform.position;
+		float eulerYStart = transform.eulerAngles.y;
+		float eulerYEnd = vDirection.xz().polarAngle()*-Mathf.Rad2Deg + 90.0f;
+		//Because eulerAngles is positive clockwise
+		
+		animPlayer.addLayer(1,null,true);
+		float deltaAngle = Mathf.DeltaAngle(eulerYStart,eulerYEnd);
+		PlayableController playableController= animPlayer.transitionTo(
+			deltaAngle>=0 ? clipLeftTurn90 : clipRightTurn90,
+			transitionTime,
+			1,
+			resetMode: eTransitionResetMode.resetAlways
+		);
+		animPlayer.setLayerWeight(1,Mathf.Clamp(
+			Mathf.Abs(Mathf.DeltaAngle(eulerYStart,eulerYEnd)/90.0f),
+			rangeTurnWeight.x,
+			rangeTurnWeight.y
+		));
+		
+		float t = 0.0f;
+		while(t < 1.0f){
+			yield return null;
+			Quaternion qLookTarget = tVCamTarget.rotation;
+			facingAngle = Mathf.LerpAngle(eulerYStart,eulerYEnd,t);
+			transform.setEulerY(facingAngle);
+			tVCamTarget.rotation = qLookTarget; //restore camera rotation
+			t += Time.deltaTime/turnTime;
+		}
+		animPlayer.transitionTo((AnimationClip)null,transitionTime,1);
+	}
+	[SerializeField] Transform tTest;
 	void Update(){
 		if(Keyboard.current.xKey.wasPressedThisFrame)
-			animPlayer.play(clipPickup);
+			turnToward(tTest);
+		if(Keyboard.current.yKey.wasPressedThisFrame)
+			animPlayer.play(clipRightTurn90);
 	}
-
 }
 
 //#if UNITY_EDITOR

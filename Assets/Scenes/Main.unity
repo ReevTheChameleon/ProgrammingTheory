@@ -5441,7 +5441,8 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: cd877cc4d44fd644dad1053769aa7df5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cd877cc4d44fd644dad1053769aa7df5, type: 3}
 --- !u!4 &1967332961 stripped
 Transform:
@@ -5695,11 +5696,16 @@ MonoBehaviour:
   actionIDZoom:
     sGuid: f4d97fa2-3a0d-4e9b-a6a4-5b845c53482d
   cameraControl: {fileID: 963194230}
-  v2ZoomRange: {x: 2, y: 8}
+  rangeZoom: {x: 0, y: 0}
   inputZoomSensitivity: 0.005
   actionIDInteract:
     sGuid: 16beace6-7dc2-4c9f-a708-594f3f395814
-  clipPickup: {fileID: 0}
+  clipLeftTurn90: {fileID: 7400000, guid: ca0d092b30d72bb42a53c85b328e6d2b, type: 2}
+  clipRightTurn90: {fileID: 7400000, guid: 8a8fb6b6616914646bc5656f00a5a15b, type: 2}
+  rangeTurnWeight: {x: 0.2, y: 1}
+  turnTime: 1
+  clipPickup: {fileID: -203655887218126122, guid: 8cfecbe50de83854db87e514b9a5e37e, type: 3}
+  tTest: {fileID: 2133160078}
 --- !u!4 &2060826207
 Transform:
   m_ObjectHideFlags: 0
@@ -5807,7 +5813,7 @@ MonoBehaviour:
   bDontDestroyOnLoad: 0
   rigHeadLookAt:
     bAutoApply: 1
-    tLookTarget: {fileID: 1774273570}
+    tLookTarget: {fileID: 0}
     weight: 1
     aRigSetting:
     - transform: {fileID: 712291051}
@@ -5961,7 +5967,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2133160075}
   m_LocalRotation: {x: -0.69492817, y: 0.26840514, z: 0.29786596, w: 0.5969167}
-  m_LocalPosition: {x: -4.65, y: 1.01, z: 0}
+  m_LocalPosition: {x: -5.71, y: 1.037, z: 1.148}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

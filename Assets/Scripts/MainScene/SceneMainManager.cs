@@ -42,7 +42,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
 
 	[SerializeField] Canvas cvBalloon;
-	public Canvas CanvasBallon{ get{return cvBalloon;} }
+	public Canvas CanvasBalloon{ get{return cvBalloon;} }
 
 	public eDigitType getDigitType(int digit,int index){
 		if(digit==aDigitExit[index])

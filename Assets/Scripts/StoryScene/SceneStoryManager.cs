@@ -21,7 +21,7 @@ public class SceneStoryManager : LoneMonoBehaviour<SceneStoryManager>{
 	private ParallelEnumerator subitrBlur;
 	private InterpolableKawaseBlurFeature renderFeatureKawaseBlur;
 	[SerializeField] float cooldownSkip;
-	private Trigger triggerSkip = new Trigger();
+	private FrameTrigger triggerSkip = new FrameTrigger();
 
 	[Header("Input")]
 	[SerializeField] InputActionID actionIDInteract;
