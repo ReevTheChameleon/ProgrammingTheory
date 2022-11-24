@@ -9,10 +9,12 @@ It is possible to fix, but if there is no overlap triggers, it wastes performanc
 so it is not implemented. */
 [RequireComponent(typeof(Collider))]
 public abstract class Interactable : MonoBehaviour{
-	[Tag] const string tagPlayer = "Player";
+	[Bakable][Tag] protected const string tagPlayer = "Player";
 	[SerializeField] protected Vector2 rangeEulerYInteractable;
 	[SerializeField][ShowPosition(true,"Balloon")] protected Vector3 vBallonPos;
 	protected Transform tPlayer;
+	protected bool bHideBalloon;
+	private bool bActivatingBalloon = false;
 
 	public static Interactable Focused{get; private set;} = null;
 	public static bool interact(){
@@ -29,7 +31,7 @@ public abstract class Interactable : MonoBehaviour{
 	protected virtual void OnTriggerEnter(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			this.enabled = true;
-			activate();
+			//activate();
 			Update();
 		}
 	}
@@ -45,16 +47,21 @@ public abstract class Interactable : MonoBehaviour{
 		cvBalloon.transform.position = transform.TransformPoint(vBallonPos);
 		cvBalloon.gameObject.SetActive(true);
 		HeadLookController.Instance.setHeadLookTarget(transform);
+		bActivatingBalloon = true;
 	}
 	protected virtual void deactivate(){
 		Focused = null;
 		SceneMainManager.Instance.CanvasBalloon.gameObject.SetActive(false);
 		HeadLookController.Instance.setHeadLookTarget(null);
+		bActivatingBalloon = false;
 	}
-	void Update(){
-		if(IsInYLookRange)
+	protected virtual void Update(){
+		if(bHideBalloon)
+			return;
+		bool bInRange = IsInYLookRange;
+		if(!bActivatingBalloon && bInRange)
 			activate();
-		else
+		else if(bActivatingBalloon && !bInRange)
 			deactivate();
 	}
 	protected bool IsInYLookRange{

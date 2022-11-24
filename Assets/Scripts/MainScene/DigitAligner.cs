@@ -5,7 +5,7 @@ using TMPro;
 using UnityEditor;
 #endif
 
-[RequireComponent(typeof(DigitMessage))]
+[RequireComponent(typeof(DigitInspectable))]
 public class DigitAligner : MonoBehaviour{
 	/* These have to be direct children of DigitAligner.gameObject */
 	[SerializeField] TMP_Text[] aDigit;
@@ -18,10 +18,10 @@ public class DigitAligner : MonoBehaviour{
 	[SerializeField][Range(0,9)] int[] number;
 	#endif
 	
-	DigitMessage digitMessage;
+	DigitInspectable digitMessage;
 
 	void Awake(){
-		digitMessage = GetComponent<DigitMessage>();
+		digitMessage = GetComponent<DigitInspectable>();
 	}
 	//Let throw if aDigit/format is not correct because game can't run with that
 	public int getDigit(int index){

@@ -26,6 +26,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	private bool bMoving;
 	private LoneCoroutine routineTurn = new LoneCoroutine();
 	private float targetFacingAngle;
+	private float facingAngle;
 	//private Vector3 vMoveDirection;
 
 	[Header("InputLook")]
@@ -47,8 +48,6 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] Vector2 rangeTurnWeight;
 	[SerializeField] float turnTime;
 	[SerializeField] AnimationClip clipPickup;
-
-	public Transform TCamTarget{get {return tVCamTarget;} }
 
 	protected override void Awake(){
 		base.Awake();
@@ -104,16 +103,15 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		tVCamTarget.eulerAngles = eulerAngles;
 		if(bMoving){
 			//faceDirection(v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f);
-			faceDirection(facingAngle);
+			transform.setEulerY(tVCamTarget.eulerAngles.y-facingAngle);
 		}
 	}
-	private float facingAngle;
-	private void faceDirection(float angle){ //delta angle from tVCamTarget forward
-		/* Trick from Unity tutorial */
-		transform.setEulerY(tVCamTarget.eulerAngles.y-angle);
-		tVCamTarget.setLocalEulerY(angle);
-		//vMoveDirection = transform.rotation*Vector3.forward;
-	}
+	//private void faceDirection(float angle){ //delta angle from tVCamTarget forward
+	//	/* Trick from Unity tutorial */
+	//	transform.setEulerY(tVCamTarget.eulerAngles.y-angle);
+	//	//tVCamTarget.setLocalEulerY(angle);
+	//	//vMoveDirection = transform.rotation*Vector3.forward;
+	//}
 	private void onInputZoom(InputAction.CallbackContext context){
 		float delta = inputZoomSensitivity*context.ReadValue<float>(); //usually Windows is +/-120
 		cameraControl.targetCameraDistance =
@@ -132,11 +130,10 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		while(t < 1.0f){
 			yield return null;
 			facingAngle = Mathf.LerpAngle(angleStart,angleEnd,t);
-			faceDirection(facingAngle);
+			transform.setEulerY(tVCamTarget.eulerAngles.y-facingAngle);
 			t += Time.deltaTime/turnTime;
 		}
-		facingAngle = angleEnd;
-		faceDirection(angleEnd);
+		transform.setEulerY(tVCamTarget.eulerAngles.y-angleEnd);
 	}
 	private IEnumerator rfMove(){
 		WaitForFixedUpdate wait = new WaitForFixedUpdate();
@@ -196,17 +193,26 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			Quaternion qLookTarget = tVCamTarget.rotation;
 			facingAngle = Mathf.LerpAngle(eulerYStart,eulerYEnd,t);
 			transform.setEulerY(facingAngle);
-			tVCamTarget.rotation = qLookTarget; //restore camera rotation
+			//tVCamTarget.rotation = qLookTarget; //restore camera rotation
 			t += Time.deltaTime/turnTime;
 		}
 		animPlayer.transitionTo((AnimationClip)null,transitionTime,1);
 	}
+	public bool ShowCursor{
+		get{return Cursor.lockState != CursorLockMode.Locked;}
+		set{Cursor.lockState = value ? CursorLockMode.None : CursorLockMode.Locked;}
+	}
+
 	[SerializeField] Transform tTest;
 	void Update(){
 		if(Keyboard.current.xKey.wasPressedThisFrame)
 			turnToward(tTest);
 		if(Keyboard.current.yKey.wasPressedThisFrame)
 			animPlayer.play(clipRightTurn90);
+		if(Keyboard.current.cKey.wasPressedThisFrame)
+			ShowCursor = true;
+		if(Keyboard.current.hKey.wasPressedThisFrame)
+			ShowCursor = false;
 	}
 }
 

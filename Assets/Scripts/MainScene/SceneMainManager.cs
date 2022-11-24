@@ -79,7 +79,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 			roomDataCurrent.aGDoor[i] = spawnDoor(roomDataCurrent.gRoom,0,i);
 		Debug.Log(aDigitExit[0]+" "+aDigitExit[1]+" "+aDigitExit[2]);
 		
-		Cursor.lockState = CursorLockMode.Locked;
+		PlayerController.Instance.ShowCursor = false;
 		StartCoroutine(rfStartSequence());
 	}
 	#endregion
@@ -141,7 +141,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	private GameObject spawnRoom(Vector3 vPosition,int[] aDigit){
 		GameObject gRoom = poolerRoom.getObject(vPosition);
 		DigitAligner digitAligner = gRoom.GetComponentInChildren<DigitAligner>();
-		DigitMessage digitMessage = gRoom.GetComponentInChildren<DigitMessage>();
+		DigitInspectable digitMessage = gRoom.GetComponentInChildren<DigitInspectable>();
 		eDigitType[] aDigitType = new eDigitType[3];
 		for(int i=0; i<3; ++i){
 			digitAligner.setDigit(i,aDigit[i]);

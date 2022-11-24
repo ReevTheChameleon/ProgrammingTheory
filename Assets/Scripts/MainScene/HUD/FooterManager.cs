@@ -81,7 +81,6 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 		routineFooter.start(this,subitrTweenInFooter);
 	}
 	public void stepFooter(){
-		Debug.LogWarning("Here step");
 		triggerSkip.set();
 	}
 }

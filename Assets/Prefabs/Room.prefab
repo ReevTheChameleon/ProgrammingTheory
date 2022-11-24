@@ -605,9 +605,9 @@ MonoBehaviour:
   rangeEulerYInteractable: {x: -180, y: 180}
   vBallonPos: {x: 0, y: 5, z: 0}
   lText: []
-  durationPan: 0.5
+  durationPan: 0.75
   minCamEulerX: 60
-  targetDistanceCamera: 6
+  targetDistanceCamera: 4.5
 --- !u!1 &4045997703927285011
 GameObject:
   m_ObjectHideFlags: 0
