@@ -49,7 +49,7 @@ public class Inspectable : Interactable{
 	protected IEnumerator rfStartInspectSequence(){
 		inspectionState = eInspectionState.StartSequence;
 		PlayerController playerController = PlayerController.Instance;
-		playerController.setActiveInputMovement(false);
+		playerController.InputMode = eInputMode.Interacting;
 		playerController.turnToward(transform);
 
 		FollowConstraint camTargetContraint = tCamTarget.GetComponent<FollowConstraint>();
@@ -82,13 +82,16 @@ public class Inspectable : Interactable{
 	protected IEnumerator rfEndInspectSequence(){
 		inspectionState = eInspectionState.EndSequence;
 		FooterManager.Instance.hideFooter();
+		FollowConstraint camTargetConstraint = tCamTarget.GetComponent<FollowConstraint>();
+		vCamTargetStart = camTargetConstraint.TargetPosition;
 		subitrPanCamera.bReverse = true;
+		subitrPanCamera.Reset();
 		yield return subitrPanCamera;
 		
 		bHideBalloon = false;
 		SceneMainManager.Instance.CanvasBalloon.gameObject.SetActive(true);
-		tCamTarget.GetComponent<FollowConstraint>().enabled = true;
-		PlayerController.Instance.setActiveInputMovement(true);
+		camTargetConstraint.enabled = true;
+		PlayerController.Instance.InputMode = eInputMode.MainGameplay;
 		inspectionState = eInspectionState.None;
 	}
 	public override void onInteracted(){

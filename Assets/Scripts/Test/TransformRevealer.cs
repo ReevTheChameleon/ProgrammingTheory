@@ -8,6 +8,7 @@ public class TransformRevealer : MonoBehaviour{}
 
 [CustomEditor(typeof(TransformRevealer))]
 class TransformRevealerEditor : Editor{
+	private const float Space_Size = 10.0f;
 	private TransformRevealer targetAs;
 	private bool bLocal;
 	private bool bRectTransformRelative;
@@ -19,6 +20,8 @@ class TransformRevealerEditor : Editor{
 	public override void OnInspectorGUI(){
 		if(!EditorGUIUtility.wideMode)
 			EditorGUIUtility.wideMode = true;
+	//----------------------------------------------------------------------------
+		#region TRANSFORM
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Transform",EditorStyles.boldLabel);
 		if(EditorHelper.contextClicked(GUILayoutUtility.GetLastRect())){
@@ -213,7 +216,9 @@ class TransformRevealerEditor : Editor{
 			}
 		}
 		--EditorGUI.indentLevel;
-
+		#endregion
+	//----------------------------------------------------------------------------
+		#region RECTTRANSFORM
 		if(targetAs.transform is RectTransform){
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("RectTransform",EditorStyles.boldLabel);
@@ -235,7 +240,7 @@ class TransformRevealerEditor : Editor{
 			}
 			EditorGUILayout.EndHorizontal();
 
-			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight*5.0f);
+			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight*6.0f+Space_Size);
 			Rect rectField = GUILayoutUtility.GetLastRect();
 			float singleLineHeight = EditorGUIUtility.singleLineHeight;
 			float labelWidth = EditorGUIUtility.labelWidth;
@@ -386,8 +391,25 @@ class TransformRevealerEditor : Editor{
 				);
 				contextMenu.ShowAsContext();
 			}
+
+			rectField.y += singleLineHeight+10.0f;
+			EditorGUI.BeginChangeCheck();
+			v2Temp = EditorGUI.Vector2Field(
+				rectField,
+				"Size",
+				((RectTransform)targetAs.transform).rect.size
+			);
+			if(EditorGUI.EndChangeCheck()){
+				Undo.RecordObject(targetAs.transform,"Change RectTransform");
+				((RectTransform)targetAs.transform).setWidth(v2Temp.x);
+				((RectTransform)targetAs.transform).setHeight(v2Temp.y);
+			}
+			//No reset option for size!
+
 			--EditorGUI.indentLevel;
 		}
+		#endregion
+	//----------------------------------------------------------------------------
 	}
 }
 #endif

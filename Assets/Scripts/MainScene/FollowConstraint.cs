@@ -5,6 +5,7 @@ public class FollowConstraint : MonoBehaviour{
 	public Vector3 vOffset;
 
 	void LateUpdate(){
-		transform.position = tTarget.position + vOffset;
+		transform.position = TargetPosition;
 	}
+	public Vector3 TargetPosition{ get{return tTarget.position+vOffset;} }
 }

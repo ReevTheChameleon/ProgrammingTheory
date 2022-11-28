@@ -27,7 +27,9 @@ public abstract class Interactable : MonoBehaviour{
 	protected virtual void Awake(){
 		enabled = false;
 	}
-
+	protected virtual void OnDisable(){
+		deactivate();
+	}
 	protected virtual void OnTriggerEnter(Collider other){
 		if(other.CompareTag(tagPlayer)){
 			this.enabled = true;

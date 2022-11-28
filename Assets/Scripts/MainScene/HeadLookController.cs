@@ -6,6 +6,10 @@ public class HeadLookController : LoneMonoBehaviour<HeadLookController>{
 	[SerializeField] RigLookAt rigHeadLookAt;
 	[SerializeField] float maxSpeedHeadTurn; //deg/s
 	private Quaternion[] aqPrev;
+		
+	#if UNITY_EDITOR
+	[SerializeField] bool bDrawRay;
+	#endif
 
 	public void setHeadLookTarget(Transform tTarget){
 		rigHeadLookAt.tLookTarget = tTarget; //let LateUpdate check and assign
@@ -29,6 +33,9 @@ public class HeadLookController : LoneMonoBehaviour<HeadLookController>{
 			aqPrev[i] = aqPrev[i] * qDeltaPrev;
 			rigSetting.transform.rotation = rigSetting.transform.rotation * aqPrev[i];
 		}
-		rigHeadLookAt.drawLookRay();
+		#if UNITY_EDITOR
+		if(bDrawRay)
+			rigHeadLookAt.drawLookRay();
+		#endif
 	}
 }

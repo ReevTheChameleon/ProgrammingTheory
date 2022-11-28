@@ -6,14 +6,15 @@ using System.Collections.Generic;
 
 public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	[SerializeField] TextMeshProUGUI txtFooter;
-	[SerializeField][GrayOnPlay] Vector2 v2AnchoredPosShow;
-	[SerializeField][GrayOnPlay] Vector2 v2AnchoredPosHide;
 	[SerializeField][GrayOnPlay] float footerTransitionTime;
 	[SerializeField][GrayOnPlay] float typewriteSpeed;
 	[SerializeField] GameObject gContinue;
 	[SerializeField] float cooldownSkip;
 	
 	RectTransform rtFooter;
+	private Vector2 v2AnchoredPosShow;
+	private Vector2 v2AnchoredPosHide;
+
 	private LoneCoroutine routineFooter = new LoneCoroutine();
 	private TweenRoutineUnit subitrTweenInFooter;
 	private TypewriteRoutineUnit subitrTypewrite;

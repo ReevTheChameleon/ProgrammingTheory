@@ -66,15 +66,15 @@ class RigLookAtSettingDrawer : PropertyDrawer{
 
 [Serializable]
 public class RigLookAt{
-	public bool bAutoApply = true;
+	//public bool bAutoApply = true;
 	public Transform tLookTarget;
 	[Range(0,1)] public float weight =1.0f;
 	[Tooltip("Must be ordered down the hierarchy for now. Will revise later")]
 	public RigLookAtSetting[] aRigSetting;
 	
-	#if UNITY_EDITOR
-	[SerializeField] bool bDrawRay;
-	#endif
+	//#if UNITY_EDITOR
+	//[SerializeField] bool bDrawRay;
+	//#endif
 
 	//void LateUpdate(){
 	//	if(bAutoApply){

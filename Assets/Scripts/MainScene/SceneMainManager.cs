@@ -9,13 +9,16 @@ using UnityEngine.UI;
 public enum eDigitType{Normal,Cow,Bull}
 
 public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
+	[Header("Object Pooler")]
 	[SerializeField] ObjectPooler poolerRoom;
 	[SerializeField] ObjectPooler[] aPoolerDoor;
 
+	[Header("Digit Material")]
 	[SerializeField] Material matBullDigit;
 	[SerializeField] Material matCowDigit;
 	[SerializeField] Material matNormalDigit;
 
+	[Header("Player")]
 	[SerializeField] GameObject gPlayer;
 
 	private int[] aDigitExit = new int[3];
@@ -41,8 +44,13 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 
 	LoneCoroutine routineChangeRoom = new LoneCoroutine();
 
+	[Header("HUD")]
 	[SerializeField] Canvas cvBalloon;
+	[SerializeField] DlgTwoButton dlgFooter;
+	[SerializeField] DlgTwoButton dlgPause;
+
 	public Canvas CanvasBalloon{ get{return cvBalloon;} }
+	public DlgTwoButton DlgFooter{ get{return dlgFooter;} }
 
 	public eDigitType getDigitType(int digit,int index){
 		if(digit==aDigitExit[index])
@@ -64,6 +72,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		aDigitExit[1] = aNumber[1];
 		aDigitExit[2] = aNumber[2];
 		matCover = gCover.GetComponent<Renderer>().sharedMaterial;
+
+		dlgPause.setButtonAction(onEndPause,onEndPause,onEndPause);
 	}
 	void Start(){
 		RoomScaler rawRoomScaler =
@@ -81,6 +91,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		
 		PlayerController.Instance.ShowCursor = false;
 		StartCoroutine(rfStartSequence());
+
+		((RectTransform)dlgPause.transform).anchoredPosition = Vector3.zero;
+		dlgPause.close();
 	}
 	#endregion
 //--------------------------------------------------------------------------------------------
@@ -220,10 +233,24 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] float durationFade;
 
 	private IEnumerator rfStartSequence(){
-		PlayerController.Instance.setActiveInputMovement(false);
+		PlayerController.Instance.enabled = false;
 		yield return imgScreenCover.tweenAlpha(0.0f,0.0f,durationFade);
-		PlayerController.Instance.setActiveInputMovement(true);
+		PlayerController.Instance.enabled = true;
+		PlayerController.Instance.InputMode = eInputMode.MainGameplay;
 	}
 	#endregion
 //--------------------------------------------------------------------------------------------
+	public bool IsPause{get; private set;} = false;
+	private eInputMode prevInputMode;
+	public void pause(){
+		prevInputMode = PlayerController.Instance.InputMode;
+		PlayerController.Instance.InputMode = eInputMode.Pause;
+		dlgPause.popup();
+		IsPause = true;
+	}
+	private void onEndPause(){
+		dlgPause.close();
+		PlayerController.Instance.InputMode = prevInputMode;
+		IsPause = false;
+	}
 }

@@ -7,6 +7,8 @@ using System;
 using UnityEditor;
 #endif
 
+public enum eInputMode{ MainGameplay,Interacting,Pause }
+
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(AnimationPlayer))]
 public class PlayerController : LoneMonoBehaviour<PlayerController>{
@@ -48,7 +50,42 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] Vector2 rangeTurnWeight;
 	[SerializeField] float turnTime;
 	[SerializeField] AnimationClip clipPickup;
+	[SerializeField] float clipPickupSpeed;
+	[SerializeField] float clipPickupTransitionTime;
 
+	[Header("InputEsc")]
+	[SerializeField] InputActionID actionIDEsc;
+
+	private eInputMode inputMode = eInputMode.MainGameplay;
+	public eInputMode InputMode{
+		get{ return inputMode; }
+		set{
+			routineTurn.stop();
+			routineMove.stop();
+			animPlayer.transitionTo(clipIdle,transitionTime);
+			switch(value){
+				case eInputMode.MainGameplay:
+					playerInput.actions[actionIDMove].Enable();
+					playerInput.actions[actionIDLook].Enable();
+					playerInput.actions[actionIDZoom].Enable();
+					playerInput.actions[actionIDInteract].Enable();
+					break;
+				case eInputMode.Interacting:
+					playerInput.actions[actionIDMove].Disable();
+					playerInput.actions[actionIDLook].Disable();
+					playerInput.actions[actionIDZoom].Disable();
+					playerInput.actions[actionIDInteract].Enable();
+					break;
+				case eInputMode.Pause:
+					playerInput.actions[actionIDMove].Disable();
+					playerInput.actions[actionIDLook].Disable();
+					playerInput.actions[actionIDZoom].Disable();
+					playerInput.actions[actionIDInteract].Disable();
+					break;
+			}
+			inputMode = value;
+		}
+	}
 	protected override void Awake(){
 		base.Awake();
 		playerInput = GetComponent<PlayerInput>();
@@ -61,6 +98,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDLook].performed += onInputLook;
 		playerInput.actions[actionIDZoom].performed += onInputZoom;
 		playerInput.actions[actionIDInteract].performed += onInputInteract;
+		playerInput.actions[actionIDEsc].performed += onInputEsc;
 	}
 	void OnDisable(){
 		playerInput.actions[actionIDMove].performed -= onInputMove;
@@ -68,10 +106,12 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDLook].performed -= onInputLook;
 		playerInput.actions[actionIDZoom].performed -= onInputZoom;
 		playerInput.actions[actionIDInteract].performed += onInputInteract;
+		playerInput.actions[actionIDEsc].performed -= onInputEsc;
 		routineTurn.stop();
 	}
 	void Start(){
 		animPlayer.play(clipIdle);
+		animPlayer.addLayer(1,null,true);
 	}
 	private void onInputMove(InputAction.CallbackContext context){
 		v2Direction = context.ReadValue<Vector2>();
@@ -146,24 +186,23 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	private void onInputInteract(InputAction.CallbackContext context){
 		Interactable.Focused?.onInteracted();
 	}
-
-	public void setActiveInputMovement(bool bEnable){
-		if(bEnable){
-			routineTurn.stop();
-			animPlayer.transitionTo(clipIdle,transitionTime);
-			playerInput.actions[actionIDMove].Enable();
-			playerInput.actions[actionIDLook].Enable();
-			playerInput.actions[actionIDZoom].Enable();
-		}
-		else{
-			routineMove.stop();
-			routineTurn.stop();
-			animPlayer.transitionTo(clipIdle,transitionTime);
-			playerInput.actions[actionIDMove].Disable();
-			playerInput.actions[actionIDLook].Disable();
-			playerInput.actions[actionIDZoom].Disable();
-		}
-	}
+	//public void setActiveInputMovement(bool bEnable){
+	//	if(bEnable){
+	//		routineTurn.stop();
+	//		animPlayer.transitionTo(clipIdle,transitionTime);
+	//		playerInput.actions[actionIDMove].Enable();
+	//		playerInput.actions[actionIDLook].Enable();
+	//		playerInput.actions[actionIDZoom].Enable();
+	//	}
+	//	else{
+	//		routineMove.stop();
+	//		routineTurn.stop();
+	//		animPlayer.transitionTo(clipIdle,transitionTime);
+	//		playerInput.actions[actionIDMove].Disable();
+	//		playerInput.actions[actionIDLook].Disable();
+	//		playerInput.actions[actionIDZoom].Disable();
+	//	}
+	//}
 	public void turnToward(Transform tTarget){
 		routineTurn.start(this,rfTurnToward(tTarget));
 	}
@@ -173,7 +212,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		float eulerYEnd = vDirection.xz().polarAngle()*-Mathf.Rad2Deg + 90.0f;
 		//Because eulerAngles is positive clockwise
 		
-		animPlayer.addLayer(1,null,true);
+		//animPlayer.addLayer(1,null,true);
 		float deltaAngle = Mathf.DeltaAngle(eulerYStart,eulerYEnd);
 		PlayableController playableController= animPlayer.transitionTo(
 			deltaAngle>=0 ? clipLeftTurn90 : clipRightTurn90,
@@ -196,14 +235,73 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			//tVCamTarget.rotation = qLookTarget; //restore camera rotation
 			t += Time.deltaTime/turnTime;
 		}
-		animPlayer.transitionTo((AnimationClip)null,transitionTime,1);
+		animPlayer.fadeOutLayer(transitionTime,1);
+	}
+	[SerializeField] public AnimationTree treeWalk;
+	[SerializeField] public AnimationTree treeWalkBackward;
+	[SerializeField] Vector2 rangeWalkWeight;
+	[SerializeField] float walkTransitionTime;
+	private const float WALKSPEED = 1.65474f/1.033333f *0.9f;
+	private const float WALKBACKWARDSPEED = 1.415919f/1.233333f *0.9f;
+	/* Assuming walk animation has const speed, there should be a more correct
+	kinematic formula that better sync animation and movement, but this suffices for now.
+	(The reason we don't use root motion is that with it we can't walk to
+	final position accurately because we don't know WHEN to transition back to idle.) */
+	public IEnumerator rfWalkToward(Vector3 vPosition,bool bBackward=false){
+		Vector3 vPosStart = transform.position;
+		float distance = Vector3.Distance(vPosition,vPosStart);
+		PlayableController controller;
+		float animationWeight;
+		float walkSpeed;
+		if(bBackward){
+			animationWeight = MathfExtension.clamp(distance,rangeWalkWeight);
+			treeWalkBackward[0].weight = animationWeight;
+			controller = animPlayer.transitionTo(treeWalkBackward,walkTransitionTime,0);
+			walkSpeed = WALKBACKWARDSPEED;
+		}
+		else{
+			animationWeight = MathfExtension.clamp(distance,rangeWalkWeight);
+			treeWalk[0].weight = animationWeight;
+			controller = animPlayer.transitionTo(treeWalk,walkTransitionTime,0);
+			walkSpeed = WALKSPEED;
+		}
+		//controller.setSpeed(walkSpeedMultiplier);
+		//animationWeight = 0.5f;
+		//animPlayer.setLayerWeight(0,animationWeight);
+		float totalTime = distance/walkSpeed/animationWeight;
+		float time = 0.0f;
+		this.delayCall(
+			() => {animPlayer.transitionTo(clipIdle,walkTransitionTime,0);},
+			totalTime-walkTransitionTime
+		);
+		while(time < totalTime){
+			yield return null;
+			rb.position = Vector3.Lerp(vPosStart,vPosition,Mathf.SmoothStep(0.0f,1.0f,time/totalTime));
+			time += Time.deltaTime;
+		}
+		rb.position = vPosition;
 	}
 	public bool ShowCursor{
 		get{return Cursor.lockState != CursorLockMode.Locked;}
 		set{Cursor.lockState = value ? CursorLockMode.None : CursorLockMode.Locked;}
 	}
+	private void onInputEsc(InputAction.CallbackContext context){
+		SceneMainManager.Instance.pause();
+	}
+
+	public IEnumerator rfPickup(){
+		PlayableController controller = animPlayer.transitionTo(clipPickup,clipPickupTransitionTime);
+		controller.setSpeed(clipPickupSpeed);
+		yield return new WaitForSeconds(clipPickup.length/clipPickupSpeed);
+		animPlayer.transitionTo(clipIdle,clipPickupTransitionTime);
+		yield return new WaitForSeconds(clipPickupTransitionTime);
+	}
+	void onAnimEventPickup(){
+		(Interactable.Focused as PickableInspectable)?.onPicked();
+	}
 
 	[SerializeField] Transform tTest;
+	bool bWalk = false;
 	void Update(){
 		if(Keyboard.current.xKey.wasPressedThisFrame)
 			turnToward(tTest);
@@ -213,10 +311,36 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			ShowCursor = true;
 		if(Keyboard.current.hKey.wasPressedThisFrame)
 			ShowCursor = false;
+		if(Keyboard.current.lKey.wasPressedThisFrame){
+			//PlayableController p = animPlayer.play(clipWalk);
+			//p.setSpeed(-1.0);
+			StartCoroutine(rfWalkToward(tTest.position.newY(0.0f)));
+			//PlayableController p = animPlayer.transitionTo(clipWalk,transitionTime);
+			//p.setSpeed(-1.0);
+		}
+		if(Keyboard.current.kKey.wasPressedThisFrame){
+			//treeWalk[0].weight = 0.1f;
+			animPlayer.play(treeWalkBackward,0);
+			bWalk = true;
+		}
+		if(Keyboard.current.kKey.wasReleasedThisFrame){
+			animPlayer.play(clipIdle);
+			bWalk = false;
+		}
 	}
+	//void FixedUpdate(){
+	//	if(bWalk)
+	//		rb.position += Time.fixedDeltaTime*transform.forward*WALKSPEED*walkSpeedMultiplier;
+	//}
 }
 
 //#if UNITY_EDITOR
 //[CustomEditor(typeof(PlayerController))]
-//class PlayerControllerEditor : MonoBehaviourBakerEditor{ }
+//class PlayerControllerEditor : Editor{
+//	public override void OnInspectorGUI(){
+//		DrawDefaultInspector();
+//		if(GUILayout.Button("Click"))
+//			Debug.Log(PlayerController.Instance.treeWalk[0].weight);
+//	}
+//}
 //#endif
