@@ -300,34 +300,34 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		(Interactable.Focused as PickableInspectable)?.onPicked();
 	}
 
-	[SerializeField] Transform tTest;
-	bool bWalk = false;
-	void Update(){
-		if(Keyboard.current.xKey.wasPressedThisFrame)
-			turnToward(tTest);
-		if(Keyboard.current.yKey.wasPressedThisFrame)
-			animPlayer.play(clipRightTurn90);
-		if(Keyboard.current.cKey.wasPressedThisFrame)
-			ShowCursor = true;
-		if(Keyboard.current.hKey.wasPressedThisFrame)
-			ShowCursor = false;
-		if(Keyboard.current.lKey.wasPressedThisFrame){
-			//PlayableController p = animPlayer.play(clipWalk);
-			//p.setSpeed(-1.0);
-			StartCoroutine(rfWalkToward(tTest.position.newY(0.0f)));
-			//PlayableController p = animPlayer.transitionTo(clipWalk,transitionTime);
-			//p.setSpeed(-1.0);
-		}
-		if(Keyboard.current.kKey.wasPressedThisFrame){
-			//treeWalk[0].weight = 0.1f;
-			animPlayer.play(treeWalkBackward,0);
-			bWalk = true;
-		}
-		if(Keyboard.current.kKey.wasReleasedThisFrame){
-			animPlayer.play(clipIdle);
-			bWalk = false;
-		}
-	}
+	//[SerializeField] Transform tTest;
+	//bool bWalk = false;
+	//void Update(){
+	//	if(Keyboard.current.xKey.wasPressedThisFrame)
+	//		turnToward(tTest);
+	//	if(Keyboard.current.yKey.wasPressedThisFrame)
+	//		animPlayer.play(clipRightTurn90);
+	//	if(Keyboard.current.cKey.wasPressedThisFrame)
+	//		ShowCursor = true;
+	//	if(Keyboard.current.hKey.wasPressedThisFrame)
+	//		ShowCursor = false;
+	//	if(Keyboard.current.lKey.wasPressedThisFrame){
+	//		//PlayableController p = animPlayer.play(clipWalk);
+	//		//p.setSpeed(-1.0);
+	//		StartCoroutine(rfWalkToward(tTest.position.newY(0.0f)));
+	//		//PlayableController p = animPlayer.transitionTo(clipWalk,transitionTime);
+	//		//p.setSpeed(-1.0);
+	//	}
+	//	if(Keyboard.current.kKey.wasPressedThisFrame){
+	//		//treeWalk[0].weight = 0.1f;
+	//		animPlayer.play(treeWalkBackward,0);
+	//		bWalk = true;
+	//	}
+	//	if(Keyboard.current.kKey.wasReleasedThisFrame){
+	//		animPlayer.play(clipIdle);
+	//		bWalk = false;
+	//	}
+	//}
 	//void FixedUpdate(){
 	//	if(bWalk)
 	//		rb.position += Time.fixedDeltaTime*transform.forward*WALKSPEED*walkSpeedMultiplier;

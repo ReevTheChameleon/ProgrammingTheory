@@ -6,6 +6,7 @@ using UnityEditor;
 public class TestScreenPoint : MonoBehaviour{
 	public Transform t;
 	public Vector2 v2;
+	public RectTransform rt;
 }
 
 #if UNITY_EDITOR
@@ -29,6 +30,9 @@ class TestScreenPointEditor : Editor{
 			Vector3 vScreen = Camera.main.WorldToScreenPoint(targetAs.t.position);
 			Debug.Log(vScreen);
 			targetAs.transform.position = vScreen;
+		}
+		if(GUILayout.Button("Click4")){
+			Debug.Log(targetAs.rt.position);
 		}
 	}
 }

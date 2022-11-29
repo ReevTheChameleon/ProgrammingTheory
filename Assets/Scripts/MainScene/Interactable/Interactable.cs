@@ -46,6 +46,8 @@ public abstract class Interactable : MonoBehaviour{
 	protected virtual void activate(){
 		Focused = this;
 		Canvas cvBalloon = SceneMainManager.Instance.CanvasBalloon;
+		if(!cvBalloon)
+			return; //prevent MissingReferenceException if called from OnDisable() on scene unloaded
 		cvBalloon.transform.position = transform.TransformPoint(vBallonPos);
 		cvBalloon.gameObject.SetActive(true);
 		HeadLookController.Instance.setHeadLookTarget(transform);
@@ -53,7 +55,10 @@ public abstract class Interactable : MonoBehaviour{
 	}
 	protected virtual void deactivate(){
 		Focused = null;
-		SceneMainManager.Instance.CanvasBalloon.gameObject.SetActive(false);
+		Canvas cvBalloon = SceneMainManager.Instance.CanvasBalloon;
+		if(!cvBalloon)
+			return; //prevent MissingReferenceException if called from OnDisable() on scene unloaded
+		cvBalloon.gameObject.SetActive(false);
 		HeadLookController.Instance.setHeadLookTarget(null);
 		bActivatingBalloon = false;
 	}

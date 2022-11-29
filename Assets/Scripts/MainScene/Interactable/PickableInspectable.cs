@@ -7,32 +7,32 @@ public class PickableInspectable : Inspectable{
 	[SerializeField] float durationDlgTween;
 	private Vector2 v2DlgAnchoredPosStart;
 	private Vector2 v2DlgPosEnd;
-	[SerializeField] string sDlgMessage = "What should you do?";
-	[SerializeField] string sDlgBtn1 = "Collect";
-	[SerializeField] string sDlgBtn2 = "Leave it";
+	[SerializeField] string sDlgMessage;// = "What should you do?";
+	[SerializeField] string sDlgBtn1;// = "Collect";
+	[SerializeField] string sDlgBtn2;// = "Leave it";
 	[SerializeField] float distanceCollectable;
 	private TweenRoutineUnit subitrTweenDlg;
 	DlgTwoButton dlgFooter;
 	MeshRenderer meshRenderer;
 
-	[SerializeField] Image imgIconPick;
 	[SerializeField] Sprite spIcon;
 	[SerializeField] float durationTweenIcon;
 	private TweenRoutineUnit subitrTweenIconPick;
 	private LoneCoroutine routineTweenIconPick = new LoneCoroutine();
-	private Vector3 vIconStartPos;
-	private Vector3 vIconEndPos;
-
+	protected Vector2 v2IconStartPos;
+	protected Vector2 v2IconEndPos;
+	Image imgIconPick;
 
 	protected override void Awake(){
 		base.Awake();
 		dlgFooter = SceneMainManager.Instance.DlgFooter;
 		meshRenderer = GetComponentInChildren<MeshRenderer>();
+		imgIconPick = SceneMainManager.Instance.ImgIconKeyPick;
 	}
 	void OnEnable(){
 		meshRenderer.enabled = true;
 	}
-	void Start(){
+	protected virtual void Start(){
 		RectTransform rtDlgFooter = (RectTransform)dlgFooter.transform;
 		RectTransform rtHUDCanvas = (RectTransform)rtDlgFooter.root.GetComponent<Canvas>().transform;
 		v2DlgAnchoredPosStart = new Vector2(
@@ -47,10 +47,11 @@ public class PickableInspectable : Inspectable{
 		//Assume resolution is fixed since game starts
 		subitrTweenIconPick = new TweenRoutineUnit(
 			(float t) => {
-				imgIconPick.transform.position = Vector3.Lerp(vIconStartPos,vIconEndPos,t);
+				imgIconPick.transform.position = Vector2.Lerp(v2IconStartPos,v2IconEndPos,t);
 			},
 			durationTweenIcon
 		);
+		Debug.Log(subitrTweenIconPick == null);
 	}
 	public override void onInteracted(){
 		switch(inspectionState){
@@ -92,9 +93,9 @@ public class PickableInspectable : Inspectable{
 		routineInteract.start(this,rfKeyEndInspectSequence());
 	}
 	private void onOptionPickup(){
-		routineInteract.start(this,rfKeyPickupSequence());
+		routineInteract.start(this,rfPickupSequence());
 	}
-	private IEnumerator rfKeyPickupSequence(){
+	private IEnumerator rfPickupSequence(){
 		PlayerController playerController = PlayerController.Instance;
 		subitrTweenDlg.bReverse = true;
 		subitrTweenDlg.Reset();
@@ -118,16 +119,18 @@ public class PickableInspectable : Inspectable{
 		SceneMainManager.Instance.CanvasBalloon.gameObject.SetActive(false);
 		gameObject.SetActive(false);
 	}
-	public void onPicked(){
-		routineTweenIconPick.start(this,rfPickIconSequence());
-	}
-	private IEnumerator rfPickIconSequence(){
+	protected virtual IEnumerator rfPickIconSequence(){
 		HeadLookController.Instance.setHeadLookTarget(null);
 		meshRenderer.enabled = false;
-		vIconStartPos = Camera.main.WorldToScreenPoint(transform.position);
-		//z doesn't matter for overlay Canvas (we assume icon is on such)
+		v2IconStartPos = Camera.main.WorldToScreenPoint(transform.position);
+		/* Although z doesn't seem to matter for overlay Canvas (we assume icon is on such),
+		if it is outside some range, it will not show up, so better to play safe. */
 		imgIconPick.gameObject.SetActive(true);
 		subitrTweenIconPick.Reset();
 		yield return subitrTweenIconPick;
+		imgIconPick.gameObject.SetActive(false);
+	}
+	public void onPicked(){
+		routineTweenIconPick.start(this,rfPickIconSequence());
 	}
 }

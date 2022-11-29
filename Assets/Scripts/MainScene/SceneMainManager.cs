@@ -48,9 +48,13 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] Canvas cvBalloon;
 	[SerializeField] DlgTwoButton dlgFooter;
 	[SerializeField] DlgTwoButton dlgPause;
-
 	public Canvas CanvasBalloon{ get{return cvBalloon;} }
 	public DlgTwoButton DlgFooter{ get{return dlgFooter;} }
+
+	[Header("Icon Picked")]
+	[SerializeField] Image imgIconKeyPick;
+	public Image ImgIconKeyPick{ get{return imgIconKeyPick;} }
+
 
 	public eDigitType getDigitType(int digit,int index){
 		if(digit==aDigitExit[index])
@@ -229,6 +233,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	#endregion
 //--------------------------------------------------------------------------------------------
 	#region START SEQUENCE
+	[Header("Start Sequence")]
 	[SerializeField] Image imgScreenCover;
 	[SerializeField] float durationFade;
 
