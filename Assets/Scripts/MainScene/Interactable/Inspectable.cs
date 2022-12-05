@@ -9,20 +9,20 @@ public class Inspectable : Interactable{
 	//Pan Camera Routine
 	[Header("Camera Pan")]
 	[SerializeField] protected float durationPan;
-	[SerializeField] protected float minCamEulerX;
+	[SerializeField][WideVector2] protected Vector2 rangeCamEulerX;
 	[SerializeField] protected float targetDistanceCamera;
 
 	protected LoneCoroutine routineInteract = new LoneCoroutine();
-	protected TweenRoutineUnit subitrPanCamera;
 	protected ThirdPersonCameraControl cameraControl;
 	protected Transform tCamTarget;
-	protected Vector3 vCamTargetStart;
-	protected Vector3 vCamTargetEnd;
-	protected Quaternion qCamTargetStart;
-	protected Quaternion qCamTargetEnd;
-	protected float camDistanceStart;
-	protected float camDistanceEnd;
 	
+	protected class CamInfo{
+		public Vector3 vCamTarget;
+		public Quaternion qCamTarget;
+		public float camDistance;
+	}
+	protected TweenRoutineUnit<CamInfo> subitrPanCamera;
+
 	protected enum eInspectionState{
 		None,
 		StartSequence,
@@ -36,13 +36,18 @@ public class Inspectable : Interactable{
 		base.Awake();
 		cameraControl = Camera.main.GetComponent<ThirdPersonCameraControl>();
 		tCamTarget = cameraControl.tTarget;
-		subitrPanCamera = new TweenRoutineUnit(
-			(float t) => {
+		subitrPanCamera = new TweenRoutineUnit<CamInfo>(
+			(CamInfo camInfoStart,CamInfo camInfoEnd,float t) => {
 				float tDamped = Mathf.SmoothStep(0.0f,1.0f,t);
-				tCamTarget.position = Vector3.Lerp(vCamTargetStart,vCamTargetEnd,tDamped);
-				tCamTarget.localRotation = Quaternion.Lerp(qCamTargetStart,qCamTargetEnd,tDamped);
-				cameraControl.targetCameraDistance = Mathf.Lerp(camDistanceStart,camDistanceEnd,tDamped);
+				tCamTarget.position =
+					Vector3.Lerp(camInfoStart.vCamTarget,camInfoEnd.vCamTarget,tDamped);
+				tCamTarget.localRotation =
+					Quaternion.Lerp(camInfoStart.qCamTarget,camInfoEnd.qCamTarget,tDamped);
+				cameraControl.targetCameraDistance =
+					Mathf.Lerp(camInfoStart.camDistance,camInfoEnd.camDistance,tDamped);
 			},
+			new CamInfo(),
+			new CamInfo(),
 			durationPan
 		);
 	}
@@ -57,15 +62,17 @@ public class Inspectable : Interactable{
 		bHideBalloon = true;
 		SceneMainManager.Instance.CanvasBalloon.gameObject.SetActive(false);
 
-		vCamTargetStart = tCamTarget.position;
-		vCamTargetEnd = transform.position;
-		qCamTargetStart = tCamTarget.localRotation;
+
+		subitrPanCamera.Start.vCamTarget = tCamTarget.position;
+		subitrPanCamera.End.vCamTarget = transform.position;
+		subitrPanCamera.Start.qCamTarget = tCamTarget.localRotation;
 		Vector3 eulerCamTarget = tCamTarget.localEulerAngles;
-		qCamTargetEnd = Quaternion.Euler(
-			eulerCamTarget.newX(Mathf.Max(minCamEulerX,Mathf.DeltaAngle(0.0f,eulerCamTarget.x)))
+		Quaternion qCamTargetEnd = Quaternion.Euler(eulerCamTarget.newX(
+			MathfExtension.clamp(Mathf.DeltaAngle(0.0f,eulerCamTarget.x),rangeCamEulerX))
 		);
-		camDistanceStart = cameraControl.targetCameraDistance;
-		camDistanceEnd = targetDistanceCamera;
+		subitrPanCamera.End.qCamTarget = qCamTargetEnd;
+		subitrPanCamera.Start.camDistance = cameraControl.targetCameraDistance;
+		subitrPanCamera.End.camDistance = targetDistanceCamera;
 		subitrPanCamera.bReverse = false;
 		subitrPanCamera.Reset();
 		yield return subitrPanCamera;
@@ -83,7 +90,7 @@ public class Inspectable : Interactable{
 		inspectionState = eInspectionState.EndSequence;
 		FooterManager.Instance.hideFooter();
 		FollowConstraint camTargetConstraint = tCamTarget.GetComponent<FollowConstraint>();
-		vCamTargetStart = camTargetConstraint.TargetPosition;
+		subitrPanCamera.Start.vCamTarget = camTargetConstraint.TargetPosition;
 		subitrPanCamera.bReverse = true;
 		subitrPanCamera.Reset();
 		yield return subitrPanCamera;

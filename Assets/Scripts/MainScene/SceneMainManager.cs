@@ -46,10 +46,10 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 
 	[Header("HUD")]
 	[SerializeField] Canvas cvBalloon;
-	[SerializeField] DlgTwoButton dlgFooter;
+	[SerializeField] DlgInteract dlgFooter;
 	[SerializeField] DlgTwoButton dlgPause;
 	public Canvas CanvasBalloon{ get{return cvBalloon;} }
-	public DlgTwoButton DlgFooter{ get{return dlgFooter;} }
+	public DlgInteract DlgFooter{ get{return dlgFooter;} }
 
 	[Header("Icon Picked")]
 	[SerializeField] Image imgIconKeyPick;
@@ -229,6 +229,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 			Quaternion.Euler(0.0f,-60.0f*direction+90.0f,0.0f)
 		);
 		return gDoor;
+	}
+	public GameObject spawnDoorNone(Vector3 vPos,Quaternion qRotation){
+		return aPoolerDoor[0].getObject(vPos,qRotation);
 	}
 	#endregion
 //--------------------------------------------------------------------------------------------

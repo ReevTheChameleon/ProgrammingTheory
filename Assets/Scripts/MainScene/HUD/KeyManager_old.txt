@@ -1,0 +1,63 @@
+using UnityEngine;
+using Chameleon;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections;
+using UnityEngine.InputSystem; //for test, remove later
+
+public class KeyManager : LoneMonoBehaviour<KeyManager>{
+	[SerializeField] Image imgKeyIcon;
+	[SerializeField][GrayOnPlay] TextMeshProUGUI txtCount;
+	[SerializeField][GrayOnPlay] float scaleFontBump;
+	[SerializeField][GrayOnPlay] float durationFontBump;
+	[SerializeField] TextMeshProUGUI txtKeyChange;
+	[SerializeField] float distanceFloatTxtKeyChange;
+	[SerializeField] Color32 colorPlus;
+	[SerializeField] Color32 colorMinus;
+	private LoneCoroutine routineChangeKeyCount;
+	
+	public int KeyCount{get; private set;} = 0;
+	public Vector2 VKeyIconScreenPos{ get{return imgKeyIcon.transform.position;} }
+
+	protected override void Awake(){
+		base.Awake();
+		routineChangeKeyCount = new LoneCoroutine(this,
+			new ParallelEnumerator(this,
+				txtCount.sinBumpFontSize(scaleFontBump,durationFontBump,
+					dOnDone: (float t) => txtCount.color=Color.white),
+				txtKeyChange.rectTransform.tweenAnchoredPosition(
+					txtKeyChange.rectTransform.anchoredPosition,
+					txtKeyChange.rectTransform.anchoredPosition + new Vector2(0.0f,distanceFloatTxtKeyChange),
+					durationFontBump
+				),
+				txtKeyChange.tweenVerticesAlpha(1.0f,0.0f,durationFontBump)
+			)
+		);
+		//txtKeyChange.gameObject.SetActive(false);
+	}
+	public void addKey(){
+		gameObject.SetActive(true);
+		txtCount.text = "x"+ ++KeyCount;
+		//txtKeyChange.gameObject.SetActive(true);
+		txtKeyChange.color = colorPlus;
+		txtKeyChange.text = "+1";
+		routineChangeKeyCount.restart();
+		routineChangeKeyCount.resume();
+	}
+	public bool removeKey(){
+		if(KeyCount <= 0)
+			return false;
+		txtCount.text = "x"+ --KeyCount;
+		txtKeyChange.color = colorMinus;
+		txtKeyChange.text = "-1";
+		routineChangeKeyCount.restart();
+		routineChangeKeyCount.resume();
+		return true;
+	}
+	void Update(){
+		if(Keyboard.current.upArrowKey.wasPressedThisFrame)
+			addKey();
+		if(Keyboard.current.downArrowKey.wasPressedThisFrame)
+			removeKey();
+	}
+}

@@ -9,9 +9,10 @@ public interface IDoor{
 	void reset();
 }
 public class DoorNone : MonoBehaviour,IDoor{
-	private LoneCoroutine routineDoor = new LoneCoroutine();
+	[SerializeField] BoxCollider boxCollider;
+	[Bakable] static float durationUnveil = 0.4f;
+	private LoneCoroutine routineDoor;
 	private Material matInstanceDoor;
-	[Bakable] static float durationUnveil = 0.5f;
 	private TweenRoutineUnit subitrUnveil;
 
 	void Awake(){
@@ -22,26 +23,28 @@ public class DoorNone : MonoBehaviour,IDoor{
 		Alternatively, one can use MaterialPropertyBlock, but we are using URP which allows
 		SRP batching, and MaterialPropertyBlock is not compatible with it.
 		Because we are sharing Lit Shader with other Materials, this approach seems best. */
-		subitrUnveil = matInstanceDoor.tweenAlpha(1.0f,0.0f,durationUnveil);
-	}
-	private IEnumerator rfUnveil(){
-		SceneMainManager.Instance.prepareNeighbor(transform);
-		subitrUnveil.bReverse = false;
-		yield return subitrUnveil;
-	}
-	private IEnumerator rfVeil(){
-		subitrUnveil.bReverse = true;
-		yield return subitrUnveil;
-		SceneMainManager.Instance.discardNeighbor();
+		subitrUnveil = matInstanceDoor.tweenAlpha(
+			1.0f,0.0f,durationUnveil,
+			dOnDone: (float t) => {
+				Debug.Log(t);
+				if(t<=0.0f) //reverse
+					SceneMainManager.Instance.discardNeighbor();
+				else if(t>=1.0f) //forward
+					boxCollider.enabled = false; //allow player to pass when alpha is 0
+			}
+		);
+		routineDoor = new LoneCoroutine(this,subitrUnveil);
 	}
 	void OnTriggerEnter(Collider other){
-		routineDoor.stop();
-		routineDoor.start(this,rfUnveil());
+		SceneMainManager.Instance.prepareNeighbor(transform);
+		subitrUnveil.bReverse = false;
+		routineDoor.resume();
 	}
 	void OnTriggerExit(Collider other){
 		SceneMainManager.Instance.updateCurrentRoom();
-		routineDoor.stop();
-		routineDoor.start(this,rfVeil());
+		boxCollider.enabled = true;
+		subitrUnveil.bReverse = true;
+		routineDoor.resume();
 	}
 	void OnDisable(){
 		reset();
@@ -61,26 +64,30 @@ public class DoorNone : MonoBehaviour,IDoor{
 [CustomEditor(typeof(DoorNone))]
 class DoorNormalEditor : MonoBehaviourBakerEditor{
 	private DoorNone targetAs;
-	private BoxCollider boxCollider;
+	private BoxCollider boxTrigger;
 
 	protected override void OnEnable(){
 		base.OnEnable();
 		targetAs = (DoorNone)target;
-		boxCollider = targetAs.GetComponent<BoxCollider>();
+		BoxCollider[] aBoxCollider = targetAs.GetComponents<BoxCollider>();
+		for(int i=0; i<aBoxCollider.Length; ++i){
+			if(aBoxCollider[i].isTrigger)
+				boxTrigger = aBoxCollider[i];
+		}
 	}
 	public override void OnInspectorGUI(){
+		base.OnInspectorGUI();
 		float localScaleZ = targetAs.transform.localScale.z;
 		EditorGUI.BeginChangeCheck();
 		float userColliderThickness = EditorGUILayout.FloatField(
 			"Collider Thickness",
-			boxCollider.size.z*localScaleZ
+			boxTrigger.size.z*localScaleZ
 		);
 		if(EditorGUI.EndChangeCheck()){
-			Undo.RecordObject(boxCollider,"Change DoorNormal collider size");
-			boxCollider.size = boxCollider.size.newZ(userColliderThickness/localScaleZ);
+			Undo.RecordObject(boxTrigger,"Change DoorNormal collider size");
+			boxTrigger.size = boxTrigger.size.newZ(userColliderThickness/localScaleZ);
 			//boxCollider.center = boxCollider.center.newZ(-boxCollider.size.z/2);
 		}
-		base.OnInspectorGUI();
 	}
 }
 #endif

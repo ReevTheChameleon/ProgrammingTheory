@@ -12,7 +12,8 @@ public class TestTrigger : MonoBehaviour{
 		routineFade = new LoneCoroutine(
 			this,
 			canvasGroupBalloon.tweenAlpha(
-				0.0f,1.0f,fadeTime,
+				0.0f,1.0f,
+				fadeTime,
 				dOnDone:(float t)=>{
 					if(routineFade.getItr<TweenRoutineUnit>().bReverse)
 						canvasGroupBalloon.gameObject.SetActive(false);

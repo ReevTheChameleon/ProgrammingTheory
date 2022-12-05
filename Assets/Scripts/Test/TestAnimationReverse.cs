@@ -13,6 +13,7 @@ public class TestAnimationReverse : MonoBehaviour{
 		p = GetComponent<AnimationPlayer>().play(clipEvent);
 		p.setSpeed(1.0);
 	}
+	void OnAnimatorMove(){ }
 	#if UNITY_EDITOR
 	void OnValidate(){
 		p?.setSpeed(speed);

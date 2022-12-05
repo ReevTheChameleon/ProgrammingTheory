@@ -12,9 +12,6 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	[SerializeField] float cooldownSkip;
 	
 	RectTransform rtFooter;
-	private Vector2 v2AnchoredPosShow;
-	private Vector2 v2AnchoredPosHide;
-
 	private LoneCoroutine routineFooter = new LoneCoroutine();
 	private TweenRoutineUnit subitrTweenInFooter;
 	private TypewriteRoutineUnit subitrTypewrite;
@@ -26,14 +23,12 @@ public class FooterManager : LoneMonoBehaviour<FooterManager>{
 	void Start(){
 		/* Need to initialize here to be sure that all images sizes are already set. */
 		rtFooter = (RectTransform)transform;
-		v2AnchoredPosShow = rtFooter.anchoredPosition;
-		v2AnchoredPosHide = v2AnchoredPosShow;
+		Vector2 v2AnchoredPosShow = rtFooter.anchoredPosition;
+		Vector2 v2AnchoredPosHide = v2AnchoredPosShow;
 		v2AnchoredPosHide.y -= rtFooter.rect.height;
 		rtFooter.anchoredPosition = v2AnchoredPosHide;
 		subitrTweenInFooter = rtFooter.tweenAnchoredPosition(
-			v2AnchoredPosHide,
-			v2AnchoredPosShow,
-			footerTransitionTime,
+			v2AnchoredPosHide,v2AnchoredPosShow,footerTransitionTime,
 			dMapping: (float t)=>{return Mathf.SmoothStep(0.0f,1.0f,t);}
 		);
 		subitrTypewrite = txtFooter.typewrite(typewriteSpeed);

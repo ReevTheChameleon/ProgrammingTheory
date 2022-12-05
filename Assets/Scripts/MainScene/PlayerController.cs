@@ -53,6 +53,11 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] float clipPickupSpeed;
 	[SerializeField] float clipPickupTransitionTime;
 
+	[SerializeField] float distancePickup;
+	[SerializeField] Vector3 vOpenOffset;
+	public float DistancePickup{ get{return distancePickup;} }
+	public Vector3 VOpenOffset{ get{return vOpenOffset;} }
+
 	[Header("InputEsc")]
 	[SerializeField] InputActionID actionIDEsc;
 
@@ -112,16 +117,19 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	void Start(){
 		animPlayer.play(clipIdle);
 		animPlayer.addLayer(1,null,true);
+		#if UNITY_EDITOR
+		GraphVisualizerClient.Show(animPlayer.getGraph());
+		#endif
 	}
 	private void onInputMove(InputAction.CallbackContext context){
 		v2Direction = context.ReadValue<Vector2>();
-		targetFacingAngle = v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f; //delta from tVCamTarget forward
+		targetFacingAngle = v2Direction.polarAngle() -90.0f; //delta from tVCamTarget forward
 		routineTurn.start(this,rfTurn(targetFacingAngle));
 		routineMove.start(this,rfMove());
 		//vMoveDirection = Quaternion.Euler(0.0f,-targetFacingAngle,0.0f)*tVCamTarget.forward;
 		//dRedirectRootMotion = ()=>{redirectRootMotion(vDirection);};
 		//animPlayer.evOnLateUpdate += dRedirectRootMotion;
-		//faceDirection(v2Direction.polarAngle()*Mathf.Rad2Deg -90.0f);
+		//faceDirection(v2Direction.polarAngle() -90.0f);
 		animPlayer.transitionTo(clipRun,transitionTime);
 		bMoving = true;
 	}
@@ -186,30 +194,13 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	private void onInputInteract(InputAction.CallbackContext context){
 		Interactable.Focused?.onInteracted();
 	}
-	//public void setActiveInputMovement(bool bEnable){
-	//	if(bEnable){
-	//		routineTurn.stop();
-	//		animPlayer.transitionTo(clipIdle,transitionTime);
-	//		playerInput.actions[actionIDMove].Enable();
-	//		playerInput.actions[actionIDLook].Enable();
-	//		playerInput.actions[actionIDZoom].Enable();
-	//	}
-	//	else{
-	//		routineMove.stop();
-	//		routineTurn.stop();
-	//		animPlayer.transitionTo(clipIdle,transitionTime);
-	//		playerInput.actions[actionIDMove].Disable();
-	//		playerInput.actions[actionIDLook].Disable();
-	//		playerInput.actions[actionIDZoom].Disable();
-	//	}
-	//}
 	public void turnToward(Transform tTarget){
 		routineTurn.start(this,rfTurnToward(tTarget));
 	}
 	private IEnumerator rfTurnToward(Transform tTarget){
 		Vector3 vDirection = tTarget.position-transform.position;
 		float eulerYStart = transform.eulerAngles.y;
-		float eulerYEnd = vDirection.xz().polarAngle()*-Mathf.Rad2Deg + 90.0f;
+		float eulerYEnd = -vDirection.xz().polarAngle() + 90.0f;
 		//Because eulerAngles is positive clockwise
 		
 		//animPlayer.addLayer(1,null,true);
@@ -237,40 +228,39 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		}
 		animPlayer.fadeOutLayer(transitionTime,1);
 	}
-	[SerializeField] public AnimationTree treeWalk;
-	[SerializeField] public AnimationTree treeWalkBackward;
+
+	public enum eCutsceneMotion{Walk=0,WalkBackward,SlideLeft,SlideRight}
+	[Tooltip("Walk=0,WalkBackward,SlideLeft,SlideRight")]
+	[SerializeField] public AnimationTree treeCutsceneMotion;
+	/* Element's value can still be changed. C# don't have actual const array (Credit: Roger Hill, SO)
+	So make it private and don't change it in the class. */
+	[SerializeField][EnumIndex(typeof(eCutsceneMotion))] float[] aSpeed;
 	[SerializeField] Vector2 rangeWalkWeight;
 	[SerializeField] float walkTransitionTime;
-	private const float WALKSPEED = 1.65474f/1.033333f *0.9f;
-	private const float WALKBACKWARDSPEED = 1.415919f/1.233333f *0.9f;
-	/* Assuming walk animation has const speed, there should be a more correct
-	kinematic formula that better sync animation and movement, but this suffices for now.
-	(The reason we don't use root motion is that with it we can't walk to
-	final position accurately because we don't know WHEN to transition back to idle.) */
-	public IEnumerator rfWalkToward(Vector3 vPosition,bool bBackward=false){
+
+	public IEnumerator rfWalkToward(Vector3 vPosition,eCutsceneMotion motion){
 		Vector3 vPosStart = transform.position;
 		float distance = Vector3.Distance(vPosition,vPosStart);
 		PlayableController controller;
-		float animationWeight;
-		float walkSpeed;
-		if(bBackward){
-			animationWeight = MathfExtension.clamp(distance,rangeWalkWeight);
-			treeWalkBackward[0].weight = animationWeight;
-			controller = animPlayer.transitionTo(treeWalkBackward,walkTransitionTime,0);
-			walkSpeed = WALKBACKWARDSPEED;
+		float animationWeight = MathfExtension.clamp(distance,rangeWalkWeight);
+		float walkSpeed = 0.0f;
+		for(int i=0; i<treeCutsceneMotion.lTree?.Count; ++i){
+			if(i == (int)motion){
+				treeCutsceneMotion[i].weight = animationWeight;
+				walkSpeed = aSpeed[i]*0.9f;
+				/* Assuming walk animation has const speed, there should be a more correct
+				kinematic formula that better sync animation and movement, but this suffices for now.
+				(The reason we don't use root motion is that with it we can't walk to
+				final position accurately because we don't know WHEN to transition back to idle.) */
+			}
+			else
+				treeCutsceneMotion[i].weight = 0.0f;
 		}
-		else{
-			animationWeight = MathfExtension.clamp(distance,rangeWalkWeight);
-			treeWalk[0].weight = animationWeight;
-			controller = animPlayer.transitionTo(treeWalk,walkTransitionTime,0);
-			walkSpeed = WALKSPEED;
-		}
-		//controller.setSpeed(walkSpeedMultiplier);
-		//animationWeight = 0.5f;
-		//animPlayer.setLayerWeight(0,animationWeight);
+		controller = animPlayer.transitionTo(treeCutsceneMotion,walkTransitionTime,0);
+
 		float totalTime = distance/walkSpeed/animationWeight;
 		float time = 0.0f;
-		this.delayCall(
+		Coroutine c = this.delayCall(
 			() => {animPlayer.transitionTo(clipIdle,walkTransitionTime,0);},
 			totalTime-walkTransitionTime
 		);
@@ -280,6 +270,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			time += Time.deltaTime;
 		}
 		rb.position = vPosition;
+		StopCoroutine(c); //will think of more elegant way later.
 	}
 	public bool ShowCursor{
 		get{return Cursor.lockState != CursorLockMode.Locked;}
@@ -300,9 +291,24 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		(Interactable.Focused as PickableInspectable)?.onPicked();
 	}
 
+	[SerializeField] AnimationClip clipOpen;
+	[SerializeField] Vector2 openTransitionTime;
+	private Vector3 vDoorPos;
+	public IEnumerator rfUnlock(Vector3 vDoorPos){
+		this.vDoorPos = vDoorPos;
+		animPlayer.transitionTo(clipOpen,openTransitionTime.x);
+		yield return new WaitForSeconds(clipOpen.length);
+		animPlayer.transitionTo(clipIdle,openTransitionTime.y);
+		yield return new WaitForSeconds(openTransitionTime.y);
+	}
+	public void onAnimEventLockTouch(){
+		KeyManager.Instance.removeKey();
+		KeyManager.Instance.tweenIconKeyPick(vDoorPos,false);
+	}
+
 	//[SerializeField] Transform tTest;
 	//bool bWalk = false;
-	//void Update(){
+	void Update(){
 	//	if(Keyboard.current.xKey.wasPressedThisFrame)
 	//		turnToward(tTest);
 	//	if(Keyboard.current.yKey.wasPressedThisFrame)
@@ -327,7 +333,11 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	//		animPlayer.play(clipIdle);
 	//		bWalk = false;
 	//	}
-	//}
+		if(Keyboard.current.jKey.wasPressedThisFrame)
+			animPlayer.play(treeCutsceneMotion[3].clip);
+		if(Keyboard.current.rKey.wasPressedThisFrame)
+			StartCoroutine(rfUnlock(transform.position));
+	}
 	//void FixedUpdate(){
 	//	if(bWalk)
 	//		rb.position += Time.fixedDeltaTime*transform.forward*WALKSPEED*walkSpeedMultiplier;
