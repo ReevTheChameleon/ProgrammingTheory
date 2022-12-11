@@ -6,19 +6,16 @@ using UnityEngine.UI;
 public class PickableInspectable : OptionInspectable{
 	protected MeshRenderer meshRenderer;
 
-	[SerializeField] Sprite spIcon;
+	[Header("Action Pick")]
 	[SerializeField] float durationTweenIcon;
 	//private TweenRoutineUnit subitrTweenIconPick;
 	private LoneCoroutine routineTweenIconPick = new LoneCoroutine();
 	protected Vector2 v2IconStartPos;
 	protected Vector2 v2IconEndPos;
-	Image imgIconPick;
 
 	protected override void Awake(){
 		base.Awake();
 		meshRenderer = GetComponentInChildren<MeshRenderer>();
-		imgIconPick = SceneMainManager.Instance.ImgIconKeyPick;
-		imgIconPick.sprite = spIcon;
 	}
 	void OnEnable(){
 		meshRenderer.enabled = true;

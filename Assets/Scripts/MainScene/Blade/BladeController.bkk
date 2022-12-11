@@ -1,0 +1,78 @@
+using UnityEngine;
+using Chameleon;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+public class BladeController : MonoBehaviour{
+	[Bakable][Tag] const string sTagWall = "RoomBound";
+	[SerializeField] float speedMove;
+	//[SerializeField] float angleDeviation;
+	[SerializeField] float speedRotate;
+	//[SerializeField] float angleTrackPlayer;
+	
+	Blade blade;
+	ParticleSystem psSpark;
+	private int forwardX = 1;
+	private float deltaRotation = 0.0f;
+	private int triggerEnteredCount = 0;
+
+	void Awake(){
+		blade = GetComponentInChildren<Blade>();
+		psSpark = GetComponentInChildren<ParticleSystem>();
+	}
+	void OnTriggerEnter(Collider cOther){
+		if(!cOther.CompareTag(sTagWall) || triggerEnteredCount++>0){
+			return;}
+		forwardX = -forwardX;
+		//Vector3 vPerpendicular = Vector3.Project(transform.right,cOther.transform.forward);
+		//float hitAngle = Vector3.SignedAngle(transform.right,vPerpendicular,Vector3.up);
+		//deltaRotation = Random.Range(-angleDeviation,angleDeviation);
+		deltaRotation = Vector3.SignedAngle(
+			transform.right*forwardX,
+			PlayerController.Instance.transform.position-transform.position,
+			Vector3.up
+		);
+		psSpark.Stop();
+		psSpark.transform.localPosition = -psSpark.transform.localPosition;
+		psSpark.transform.rotation =
+			QuaternionExtension.mirror(psSpark.transform.rotation,Vector3.up);
+		blade.reverse();
+	}
+	void OnTriggerExit(Collider cOther){
+		if(cOther.CompareTag(sTagWall)){
+			--triggerEnteredCount; }
+	}
+	void FixedUpdate(){
+		if(deltaRotation != 0.0f){
+			float rotateAmount = Mathf.Min(
+				Mathf.Abs(deltaRotation),
+				speedRotate*Time.fixedDeltaTime
+			);
+			rotateAmount *= Mathf.Sign(deltaRotation);
+			transform.Rotate(0.0f,0.0f,rotateAmount,Space.Self);
+			deltaRotation -= rotateAmount;
+			if(deltaRotation == 0.0f){
+				psSpark.Play();}
+		}
+		else{
+			transform.Translate(speedMove*forwardX*Time.fixedDeltaTime,0.0f,0.0f,Space.Self);}
+		//float angleToPlayer = Vector3.SignedAngle(
+		//	transform.right*forwardX,
+		//	PlayerController.Instance.transform.position-transform.position,
+		//	Vector3.up
+		//);
+		//if(angleToPlayer>=-angleTrackPlayer && angleToPlayer<=angleTrackPlayer){
+		//	float maxRotate = speedRotate*Time.fixedDeltaTime;
+		//	transform.Rotate(
+		//		0.0f,
+		//		0.0f,
+		//		Mathf.Clamp(angleToPlayer,-maxRotate,maxRotate),
+		//		Space.Self
+		//	);
+		//}
+	}
+}
+
+[CustomEditor(typeof(BladeController))]
+class BladeControllerEditor : MonoBehaviourBakerEditor{ }

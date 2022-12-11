@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using Chameleon;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -43,6 +44,9 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] Vector2 rangeZoom;
 	[SerializeField] float inputZoomSensitivity;
 
+	[Header("InputEsc")]
+	[SerializeField] InputActionID actionIDEsc;
+
 	[Header("InputInteract")]
 	[SerializeField] InputActionID actionIDInteract;
 	[SerializeField] AnimationClip clipLeftTurn90;
@@ -55,11 +59,33 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 
 	[SerializeField] float distancePickup;
 	[SerializeField] Vector3 vOpenOffset;
+
+	[SerializeField] AnimationClip clipOpen;
+	[SerializeField] Vector2 openTransitionTime;
+
+	public enum eCutsceneMotion{Walk=0,WalkBackward,SlideLeft,SlideRight}
+	[Tooltip("Walk=0,WalkBackward,SlideLeft,SlideRight")]
+	[SerializeField] public AnimationTree treeCutsceneMotion;
+	/* Element's value can still be changed. C# don't have actual const array (Credit: Roger Hill, SO)
+	So make it private and don't change it in the class. */
+	[SerializeField][EnumIndex(typeof(eCutsceneMotion))] float[] aSpeed;
+	[SerializeField] Vector2 rangeWalkWeight;
+	[SerializeField] float walkTransitionTime;
+
+	[Header("Damage")]
+	[SerializeField] AnimationClip clipDamage;
+	[SerializeField] float clipDamageSpeed;
+	[SerializeField] float clipWeightMultiplier;
+	[SerializeField] Vector2 rangeWeightDamage;
+	//[SerializeField] AvatarMask maskDamage;
+	[SerializeField] List<Material> lSharedMatPlayer;
+	[SerializeField] Color[] aColorPlayer;
+	[SerializeField] Color tintDamage;
+	[SerializeField] float tintLerp;
+	[SerializeField] float durationTintDamage;
+
 	public float DistancePickup{ get{return distancePickup;} }
 	public Vector3 VOpenOffset{ get{return vOpenOffset;} }
-
-	[Header("InputEsc")]
-	[SerializeField] InputActionID actionIDEsc;
 
 	private eInputMode inputMode = eInputMode.MainGameplay;
 	public eInputMode InputMode{
@@ -96,6 +122,12 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput = GetComponent<PlayerInput>();
 		animPlayer = GetComponent<AnimationPlayer>();
 		rb = GetComponent<Rigidbody>();
+		Renderer[] aRenderer = GetComponentsInChildren<Renderer>();
+		for(int i=0; i<aRenderer.Length; ++i){
+			lSharedMatPlayer.AddRange(aRenderer[i].sharedMaterials);}
+		aColorPlayer = new Color[lSharedMatPlayer.Count];
+		for(int i=0; i<lSharedMatPlayer.Count; ++i){
+			aColorPlayer[i] = lSharedMatPlayer[i].color;}
 	}
 	void OnEnable(){
 		playerInput.actions[actionIDMove].performed += onInputMove;
@@ -113,10 +145,12 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDInteract].performed += onInputInteract;
 		playerInput.actions[actionIDEsc].performed -= onInputEsc;
 		routineTurn.stop();
+		restorePlayerColor();
 	}
 	void Start(){
 		animPlayer.play(clipIdle);
 		animPlayer.addLayer(1,null,true);
+		animPlayer.addLayer(2,null,true);
 		#if UNITY_EDITOR
 		GraphVisualizerClient.Show(animPlayer.getGraph());
 		#endif
@@ -229,15 +263,6 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		animPlayer.fadeOutLayer(transitionTime,1);
 	}
 
-	public enum eCutsceneMotion{Walk=0,WalkBackward,SlideLeft,SlideRight}
-	[Tooltip("Walk=0,WalkBackward,SlideLeft,SlideRight")]
-	[SerializeField] public AnimationTree treeCutsceneMotion;
-	/* Element's value can still be changed. C# don't have actual const array (Credit: Roger Hill, SO)
-	So make it private and don't change it in the class. */
-	[SerializeField][EnumIndex(typeof(eCutsceneMotion))] float[] aSpeed;
-	[SerializeField] Vector2 rangeWalkWeight;
-	[SerializeField] float walkTransitionTime;
-
 	public IEnumerator rfWalkToward(Vector3 vPosition,eCutsceneMotion motion){
 		Vector3 vPosStart = transform.position;
 		float distance = Vector3.Distance(vPosition,vPosStart);
@@ -291,8 +316,6 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		(Interactable.Focused as PickableInspectable)?.onPicked();
 	}
 
-	[SerializeField] AnimationClip clipOpen;
-	[SerializeField] Vector2 openTransitionTime;
 	private Vector3 vDoorPos;
 	public IEnumerator rfUnlock(Vector3 vDoorPos){
 		this.vDoorPos = vDoorPos;
@@ -304,6 +327,29 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	public void onAnimEventLockTouch(){
 		KeyManager.Instance.removeKey();
 		KeyManager.Instance.tweenIconKeyPick(vDoorPos,false);
+	}
+	public void damagePlayer(float amount){ //full=1.0f
+		HpBarController.Instance.addHp(-amount);
+		animPlayer.play(clipDamage,2).setSpeed(clipDamageSpeed);
+		animPlayer.setLayerWeight(
+			2,MathfExtension.clamp(amount*clipWeightMultiplier,rangeWeightDamage));
+		for(int i=0; i<lSharedMatPlayer.Count; ++i){
+			lSharedMatPlayer[i].color =
+				Color.Lerp(lSharedMatPlayer[i].color,tintDamage,tintLerp);
+		}
+		this.delayCall(restorePlayerColor,durationTintDamage);
+		/* This may cause quick consecutive damage to not show,
+		but it's OK for scope of this game. (Fix = use LoneCoroutine)*/
+	}
+	private void restorePlayerColor(){
+		for(int i=0; i<lSharedMatPlayer.Count; ++i){
+			lSharedMatPlayer[i].color = aColorPlayer[i];}
+	}
+	void onAnimEventDamageEnd(){
+		animPlayer.stopLayer(2);
+	}
+	public void healPlayer(float amount){
+		HpBarController.Instance.addHp(amount);
 	}
 
 	//[SerializeField] Transform tTest;
@@ -337,6 +383,15 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			animPlayer.play(treeCutsceneMotion[3].clip);
 		if(Keyboard.current.rKey.wasPressedThisFrame)
 			StartCoroutine(rfUnlock(transform.position));
+		if(Keyboard.current.uKey.wasPressedThisFrame){
+			animPlayer.play(clipDamage,2);
+		}
+		if(Keyboard.current.upArrowKey.wasPressedThisFrame){
+			animPlayer.setLayerWeight(2,0.5f);
+		}
+		if(Keyboard.current.upArrowKey.wasPressedThisFrame){
+			animPlayer.setLayerWeight(2,2.0f);
+		}
 	}
 	//void FixedUpdate(){
 	//	if(bWalk)

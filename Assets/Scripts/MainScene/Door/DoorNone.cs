@@ -11,6 +11,7 @@ public interface IDoor{
 public class DoorNone : MonoBehaviour,IDoor{
 	[SerializeField] BoxCollider boxCollider;
 	[Bakable] static float durationUnveil = 0.4f;
+	[Bakable][Tag] const string sTagPlayer = "Player"; 
 	private LoneCoroutine routineDoor;
 	private Material matInstanceDoor;
 	private TweenRoutineUnit subitrUnveil;
@@ -36,11 +37,15 @@ public class DoorNone : MonoBehaviour,IDoor{
 		routineDoor = new LoneCoroutine(this,subitrUnveil);
 	}
 	void OnTriggerEnter(Collider other){
+		if(!other.CompareTag(sTagPlayer)){
+			return;}
 		SceneMainManager.Instance.prepareNeighbor(transform);
 		subitrUnveil.bReverse = false;
 		routineDoor.resume();
 	}
 	void OnTriggerExit(Collider other){
+		if(!other.CompareTag(sTagPlayer)){
+			return;}
 		SceneMainManager.Instance.updateCurrentRoom();
 		boxCollider.enabled = true;
 		subitrUnveil.bReverse = true;

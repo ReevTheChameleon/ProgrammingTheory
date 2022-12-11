@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEditor;
 #endif
 
-public class HpBarController : MonoBehaviour{
+public class HpBarController : LoneMonoBehaviour<HpBarController>{
 	[SerializeField] RectTransform rtBack;
 	[SerializeField] Image imgMid;
 	[SerializeField] Image imgFront;
@@ -31,7 +31,7 @@ public class HpBarController : MonoBehaviour{
 	public void addHpImmediate(float amount){
 		setImmediate(Mathf.Clamp01(Fraction+amount));
 	}
-	void Awake(){
+	protected override void Awake(){
 		waitSuspend = new WaitForSeconds(durationSuspend);
 		colorBackground = imgCircle.color;
 	}

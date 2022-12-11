@@ -82,8 +82,22 @@ public class DoorLocked : OptionInspectable,IDoor{
 				playerController.VOpenOffset
 			).newY(playerController.transform.position.y)
 		;
+		//PlayerController.eCutsceneMotion cutsceneMotion;
+		//float angle = Vector3.SignedAngle(
+		//	playerController.transform.forward,transform.forward,Vector3.up);
+		//if(angle < -30.0f) cutsceneMotion = PlayerController.eCutsceneMotion.SlideRight;
+		//else if(angle > 10.0f) cutsceneMotion = PlayerController.eCutsceneMotion.SlideLeft;
+		//else{
+		//	cutsceneMotion = Vector3.Dot(
+		//		playerController.transform.forward,
+		//		vWalkTarget - playerController.transform.position
+		//	) >= 0.0f ?
+		//	PlayerController.eCutsceneMotion.Walk :
+		//	PlayerController.eCutsceneMotion.WalkBackward;
+		//}
 		IEnumerator subitrWalkToward = playerController.rfWalkToward(
 			vWalkTarget,
+			//cutsceneMotion
 			Vector3.Cross(playerController.transform.forward,transform.forward).y < 0.0f ?
 				PlayerController.eCutsceneMotion.SlideRight :
 				PlayerController.eCutsceneMotion.SlideLeft

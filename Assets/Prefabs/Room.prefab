@@ -1013,6 +1013,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9218695032188577718}
     m_Modifications:
+    - target: {fileID: 2254875742204201416, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 2757884554762636386, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.125
@@ -1041,6 +1045,10 @@ PrefabInstance:
       propertyPath: v2WallSize.y
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5229654280638029641, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 6451230776442718610, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
@@ -1052,6 +1060,10 @@ PrefabInstance:
     - target: {fileID: 6655480542832961729, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: doorId
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538378405909730234, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 8903340590992303726, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1116,6 +1128,10 @@ PrefabInstance:
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
       value: Doorway
+      objectReference: {fileID: 0}
+    - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9058759375278784361, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
@@ -1221,6 +1237,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9218695032188577718}
     m_Modifications:
+    - target: {fileID: 2254875742204201416, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 2757884554762636386, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.125
@@ -1249,6 +1269,10 @@ PrefabInstance:
       propertyPath: v2WallSize.y
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5229654280638029641, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 6451230776442718610, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
@@ -1260,6 +1284,10 @@ PrefabInstance:
     - target: {fileID: 6655480542832961729, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: doorId
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538378405909730234, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 8903340590992303726, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1351,6 +1379,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9218695032188577718}
     m_Modifications:
+    - target: {fileID: 2254875742204201416, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 2757884554762636386, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.125
@@ -1379,6 +1411,10 @@ PrefabInstance:
       propertyPath: v2WallSize.y
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5229654280638029641, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 6451230776442718610, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
@@ -1390,6 +1426,10 @@ PrefabInstance:
     - target: {fileID: 6655480542832961729, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: doorId
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538378405909730234, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 8903340590992303726, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1537,6 +1577,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9218695032188577718}
     m_Modifications:
+    - target: {fileID: 2254875742204201416, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 2757884554762636386, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.125
@@ -1565,6 +1609,10 @@ PrefabInstance:
       propertyPath: v2WallSize.y
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5229654280638029641, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 6451230776442718610, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
@@ -1576,6 +1624,10 @@ PrefabInstance:
     - target: {fileID: 6655480542832961729, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: doorId
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538378405909730234, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 8903340590992303726, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1640,6 +1692,10 @@ PrefabInstance:
     - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_Name
       value: Doorway
+      objectReference: {fileID: 0}
+    - target: {fileID: 9058759375278784362, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 9058759376329783328, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1723,6 +1779,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9218695032188577718}
     m_Modifications:
+    - target: {fileID: 2254875742204201416, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 2757884554762636386, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.125
@@ -1751,6 +1811,10 @@ PrefabInstance:
       propertyPath: v2WallSize.y
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5229654280638029641, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 6451230776442718610, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
@@ -1762,6 +1826,10 @@ PrefabInstance:
     - target: {fileID: 6655480542832961729, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: doorId
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538378405909730234, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 8903340590992303726, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
@@ -1909,6 +1977,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9218695032188577718}
     m_Modifications:
+    - target: {fileID: 2254875742204201416, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 2757884554762636386, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.125
@@ -1937,6 +2009,10 @@ PrefabInstance:
       propertyPath: v2WallSize.y
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5229654280638029641, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
+      objectReference: {fileID: 0}
     - target: {fileID: 6451230776442718610, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
@@ -1948,6 +2024,10 @@ PrefabInstance:
     - target: {fileID: 6655480542832961729, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: doorId
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538378405909730234, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
+      propertyPath: m_TagString
+      value: RoomBound
       objectReference: {fileID: 0}
     - target: {fileID: 8903340590992303726, guid: 6cb0b56d53899d84e8ede378f24a89c1, type: 3}
       propertyPath: m_LocalScale.x
