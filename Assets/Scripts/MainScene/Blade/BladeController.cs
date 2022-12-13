@@ -62,6 +62,8 @@ public class BladeController : MonoBehaviour{
 	}
 	void FixedUpdate(){
 		Debug.DrawRay(transform.position,transform.right*forwardX*20.0f,Color.red,Time.fixedDeltaTime,false);
+		if(PlayerController.Instance.InputMode != eInputMode.MainGameplay){
+			return;}
 		if(deltaRotation != 0.0f){
 			float rotateAmount = Mathf.Min(
 				Mathf.Abs(deltaRotation),

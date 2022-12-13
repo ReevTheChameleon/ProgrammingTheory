@@ -20,8 +20,7 @@ public class KeyManager : LoneMonoBehaviour<KeyManager>{
 	private TweenRoutineUnit<Vector3> subitrTweenIconPick;
 	
 	public int KeyCount{get; private set;} = 0;
-	public Vector2 VKeyIconScreenPos{ get{return imgKeyIcon.transform.position;} }
-
+	 
 	void Start(){
 		colorNormal = txtCount.color;
 		routineChangeKeyCount = new LoneCoroutine(this,
@@ -56,8 +55,8 @@ public class KeyManager : LoneMonoBehaviour<KeyManager>{
 		return true;
 	}
 	public WaitLoneCoroutine tweenIconKeyPick(Vector3 vWorldPos,bool bCollect){ //bCollect specifies direction
-		Vector3 vIconPickWorldPos = Camera.main.WorldToScreenPoint(vWorldPos).newZ(0.0f);
-		Debug.Log(vIconPickWorldPos);
+		//Vector3 vIconPickWorldPos = Camera.main.WorldToScreenPoint(vWorldPos).newZ(0.0f);
+		//Debug.Log(vIconPickWorldPos);
 		/* Although z doesn't seem to matter for overlay Canvas (we assume icon is on such),
 		if it is outside some range, it will not show up, so better to play safe. */
 		subitrTweenIconPick.bReverse = !bCollect;

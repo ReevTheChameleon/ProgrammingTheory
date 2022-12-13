@@ -53,8 +53,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 
 	[Header("Icon Picked")]
 	[SerializeField] Image imgIconKeyPick;
-	public Image ImgIconKeyPick{ get{return imgIconKeyPick;} }
-
+	//public Image ImgIconKeyPick{ get{return imgIconKeyPick;} }
 
 	public eDigitType getDigitType(int digit,int index){
 		if(digit==aDigitExit[index])

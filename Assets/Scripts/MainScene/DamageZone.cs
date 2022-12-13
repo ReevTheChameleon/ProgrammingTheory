@@ -1,6 +1,5 @@
 using UnityEngine;
 using Chameleon;
-using System.Collections;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,26 +8,31 @@ public class DamageZone : MonoBehaviour{
 	[Bakable][Tag] const string sTagPlayer = "Player";
 	[SerializeField] float damageFrequency; //per seconds
 	[SerializeField] float damageAmount;
-	private LoneCoroutine routineDamagePlayer = new LoneCoroutine();
+	private float timeTilDamage = 0.0f;
 
+	void Start(){
+		this.enabled = false;
+	}
 	void OnTriggerEnter(Collider other){
 		if(!other.CompareTag(sTagPlayer)){
 			return;}
-		routineDamagePlayer.start(this,rfDamage());
+		timeTilDamage = Time.deltaTime;
+		this.enabled = true;
 	}
 	void OnTriggerExit(Collider other){
 		if(!other.CompareTag(sTagPlayer)){
 			return;}
-		routineDamagePlayer.stop();
+		this.enabled = false;
 	}
-	void OnDisable(){
-		routineDamagePlayer.stop();
-	}
-	private IEnumerator rfDamage(){
-		WaitForSeconds w = new WaitForSeconds(1/damageFrequency);
-		while(true){
-			PlayerController.Instance.damagePlayer(damageAmount);
-			yield return w;
+	void Update(){
+		PlayerController playerController = PlayerController.Instance;
+		//Polling. Can change to something more efficient, but overkill for this project
+		if(playerController.InputMode != eInputMode.MainGameplay)
+			return; //do not do damage during cutscene and pause
+		timeTilDamage -= Time.deltaTime;
+		if(timeTilDamage <= 0.0f){
+			playerController.damagePlayer(damageAmount);
+			timeTilDamage += 1/damageFrequency;
 		}
 	}
 }

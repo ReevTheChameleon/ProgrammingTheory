@@ -3,12 +3,23 @@ using Chameleon;
 using System.Collections;
 
 public class KeyPickable : PickableInspectable{
-	//protected override void Start(){
-	//	base.Start();
-	//	v2IconEndPos = KeyManager.Instance.VKeyIconScreenPos;
-	//}
-	protected override IEnumerator rfPickIconSequence(){
-		yield return base.rfPickIconSequence();
+	MeshRenderer meshRenderer;
+	LoneCoroutine routineTweenIconPick = new LoneCoroutine();
+
+	protected override void Awake(){
+		base.Awake();
+		meshRenderer = GetComponentInChildren<MeshRenderer>();
+	}
+	void OnEnable(){
+		meshRenderer.enabled = true;
+	}
+	public override void onPicked(){
+		base.onPicked();
+		routineTweenIconPick.start(this,rfPickSequence());
+	}
+	private IEnumerator rfPickSequence(){
+		meshRenderer.enabled = false;
+		yield return KeyManager.Instance.tweenIconKeyPick(transform.position,true);
 		KeyManager.Instance.addKey();
 	}
 }

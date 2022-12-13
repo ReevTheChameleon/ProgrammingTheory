@@ -239,11 +239,9 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		
 		//animPlayer.addLayer(1,null,true);
 		float deltaAngle = Mathf.DeltaAngle(eulerYStart,eulerYEnd);
-		PlayableController playableController= animPlayer.transitionTo(
+		PlayableController playableController= animPlayer.play(
 			deltaAngle>=0 ? clipLeftTurn90 : clipRightTurn90,
-			transitionTime,
-			1,
-			resetMode: eTransitionResetMode.resetAlways
+			1
 		);
 		animPlayer.setLayerWeight(1,Mathf.Clamp(
 			Mathf.Abs(Mathf.DeltaAngle(eulerYStart,eulerYEnd)/90.0f),
@@ -260,7 +258,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			//tVCamTarget.rotation = qLookTarget; //restore camera rotation
 			t += Time.deltaTime/turnTime;
 		}
-		animPlayer.fadeOutLayer(transitionTime,1);
+		animPlayer.stopLayer(1);
 	}
 
 	public IEnumerator rfWalkToward(Vector3 vPosition,eCutsceneMotion motion){

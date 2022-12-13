@@ -24,6 +24,20 @@ public class HpBarController : LoneMonoBehaviour<HpBarController>{
 	private WaitForSeconds waitSuspend;
 	private Color colorBackground;
 
+	[SerializeField] Image imgHealIconPick;
+	[SerializeField] float durationTweenIconHealPick;
+	private LoneCoroutine routineTweenIconHealPick;
+	private TweenRoutineUnit<Vector3> subitrTweenIconHealPick;
+
+	void Start(){
+		subitrTweenIconHealPick = imgHealIconPick.transform.tweenPosition(
+			Vector3.zero,
+			imgCircle.transform.position,
+			durationTweenIconHealPick,
+			dOnDone: (float t) => {imgHealIconPick.gameObject.SetActive(false);}
+		);
+		routineTweenIconHealPick = new LoneCoroutine(this,subitrTweenIconHealPick);
+	}
 	public float Fraction{get; private set;} = 1.0f;
 	public void addHp(float amount){
 		transitionTo(Mathf.Clamp01(Fraction+amount));
@@ -84,14 +98,22 @@ public class HpBarController : LoneMonoBehaviour<HpBarController>{
 		}
 		rt.setWidth(widthEnd);
 	}
-	void Update(){
-		//if(Keyboard.current.spaceKey.wasPressedThisFrame)
-		//	transitionTo(0.5f);
-		//if(Keyboard.current.rKey.wasPressedThisFrame)
-		//	transitionTo(1.0f);
-		if(Keyboard.current.downArrowKey.wasPressedThisFrame)
-			addHp(-0.1f);
-		if(Keyboard.current.upArrowKey.wasPressedThisFrame)
-			addHp(0.1f);
+	public WaitLoneCoroutine tweenIconHealPick(Vector3 vWorldPos){
+		subitrTweenIconHealPick.reset(
+			Camera.main.WorldToScreenPoint(vWorldPos).newZ(0.0f),
+			subitrTweenIconHealPick.End
+		);
+		imgHealIconPick.gameObject.SetActive(true);
+		return routineTweenIconHealPick.resume();
 	}
+	//void Update(){
+	//	//if(Keyboard.current.spaceKey.wasPressedThisFrame)
+	//	//	transitionTo(0.5f);
+	//	//if(Keyboard.current.rKey.wasPressedThisFrame)
+	//	//	transitionTo(1.0f);
+	//	if(Keyboard.current.downArrowKey.wasPressedThisFrame)
+	//		addHp(-0.1f);
+	//	if(Keyboard.current.upArrowKey.wasPressedThisFrame)
+	//		addHp(0.1f);
+	//}
 }
