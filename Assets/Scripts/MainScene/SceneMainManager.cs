@@ -5,6 +5,7 @@ using System;
 using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public enum eDigitType{Normal,Cow,Bull}
 
@@ -21,7 +22,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[Header("Player")]
 	[SerializeField] GameObject gPlayer;
 
-	private int[] aDigitExit = new int[3];
+	private static int[] aDigitExit = new int[3];
 	private int[] aNumber = {0,1,2,3,4,5,6,7,8,9};
 	
 	private readonly float sqrt3 = Mathf.Sqrt(3);
@@ -62,6 +63,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 			return eDigitType.Cow;
 		else
 			return eDigitType.Normal;
+	}
+	public static int getDigitExit(int index){
+		return aDigitExit[index];
 	}
 //--------------------------------------------------------------------------------------------
 	#region MONOBEHAVIOUR FUNCTIONS
@@ -241,12 +245,14 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 
 	private IEnumerator rfStartSequence(){
 		//PlayerController.Instance.enabled = false;
-		yield return imgScreenCover.tweenAlpha(0.0f,0.0f,durationFade);
+		yield return imgScreenCover.tweenAlpha(1.0f,0.0f,durationFade);
 		//PlayerController.Instance.enabled = true;
+		imgScreenCover.transform.root.gameObject.SetActive(false); //set that canvas inactive
 		PlayerController.Instance.InputMode = eInputMode.MainGameplay;
 	}
 	#endregion
 //--------------------------------------------------------------------------------------------
+	#region PAUSE SEQUENCE
 	public bool IsPause{get; private set;} = false;
 	private eInputMode prevInputMode;
 	public void pause(){
@@ -260,4 +266,61 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		PlayerController.Instance.InputMode = prevInputMode;
 		IsPause = false;
 	}
+	#endregion
+//--------------------------------------------------------------------------------------------
+	#region END SEQUENCE
+	[Header("End Sequence")]
+	[SerializeField] float timeEndSuspend;
+	[SerializeField] SceneIndex sceneIndexEnd;
+	[SerializeField] FollowConstraint camFollowConstraint;
+	[SerializeField] Transform tSpine;
+	[SerializeField] float angleCameraDie;
+	[SerializeField] float distanceCameraDie;
+	[SerializeField] float durationPanCamera;
+	public static bool IsWin{get; private set;}
+	public void onDie(){
+		IsWin = false;
+		PlayerController.Instance.InputMode = eInputMode.Freeze;
+		StartCoroutine(rfDyingSequence());
+	}
+	public void onWin(){
+		IsWin = true;
+		PlayerController.Instance.InputMode = eInputMode.Freeze;
+		StartCoroutine(rfChangeScene());
+	}
+	private IEnumerator rfDyingSequence(){
+		/* This is to make camera follow the dying body. We can't do this from the beginning
+		otherwise the camera will shake every time player gets hit or doing animation. */
+		HeadLookController.Instance.setHeadLookTarget(null);
+		if(CandleManager.Instance.IsLit){
+			CandleManager.Instance.toggleCandleLight();}
+		camFollowConstraint.tTarget = tSpine;
+		camFollowConstraint.vOffset -= tSpine.position-PlayerController.Instance.transform.position;
+		ThirdPersonCameraControl camControl = Camera.main.GetComponent<ThirdPersonCameraControl>();
+		Transform tCamTarget = camControl.tTarget;
+		Vector3 eulerCam = tCamTarget.rotation.eulerAngles;
+		/* These 3 can be made into ParallelEnumerator and LoneCoroutine, but it is unnecessary
+		because we don't need to keep track of Coroutine cancelling anymore. */
+		StartCoroutine(tCamTarget.tweenRotation(
+			tCamTarget.rotation,
+			Quaternion.Euler(angleCameraDie,eulerCam.y,eulerCam.z),
+			durationPanCamera
+		));
+		float startCamDistance = camControl.targetCameraDistance;
+		StartCoroutine(new TweenRoutineUnit(
+			(float t) => {camControl.targetCameraDistance = Mathf.Lerp(
+				startCamDistance,distanceCameraDie,t);},
+			durationPanCamera
+		));
+		yield return PlayerController.Instance.rfDie();
+		yield return rfChangeScene();
+	}
+	private IEnumerator rfChangeScene(){
+		imgScreenCover.transform.root.gameObject.SetActive(true);
+		yield return imgScreenCover.tweenAlpha(0.0f,1.0f,durationFade);
+		yield return new WaitForSeconds(timeEndSuspend);
+		SceneManager.LoadSceneAsync(sceneIndexEnd);
+	}
+	#endregion
+//--------------------------------------------------------------------------------------------
 }

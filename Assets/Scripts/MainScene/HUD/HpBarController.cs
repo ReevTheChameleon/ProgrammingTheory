@@ -41,6 +41,10 @@ public class HpBarController : LoneMonoBehaviour<HpBarController>{
 	public float Fraction{get; private set;} = 1.0f;
 	public void addHp(float amount){
 		transitionTo(Mathf.Clamp01(Fraction+amount));
+		/* This happens because I found out later that 1.0f-0.2f five times is > 0.0f,
+		and even >Mathf.Epsilon. At first I thought this was taken care of by Unity, but... */
+		if(Fraction <= 0.001f){
+			SceneMainManager.Instance.onDie();}
 	}
 	public void addHpImmediate(float amount){
 		setImmediate(Mathf.Clamp01(Fraction+amount));

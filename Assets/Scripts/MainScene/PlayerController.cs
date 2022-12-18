@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-public enum eInputMode{ MainGameplay,Interacting,Pause }
+public enum eInputMode{ MainGameplay,Interacting,Pause,Freeze }
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(AnimationPlayer))]
@@ -86,6 +86,10 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] Color tintDamage;
 	[SerializeField] float tintLerp;
 	[SerializeField] float durationTintDamage;
+	
+	[Header("Die")]
+	[SerializeField] AnimationClip clipDie;
+	[SerializeField] float durationTransitionDie;
 
 	public float DistancePickup{ get{return distancePickup;} }
 	public Vector3 VOpenOffset{ get{return vOpenOffset;} }
@@ -103,18 +107,32 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 					playerInput.actions[actionIDLook].Enable();
 					playerInput.actions[actionIDZoom].Enable();
 					playerInput.actions[actionIDInteract].Enable();
+					playerInput.actions[actionIDUse].Enable();
+					playerInput.actions[actionIDEsc].Enable();
 					break;
 				case eInputMode.Interacting:
 					playerInput.actions[actionIDMove].Disable();
 					playerInput.actions[actionIDLook].Disable();
 					playerInput.actions[actionIDZoom].Disable();
 					playerInput.actions[actionIDInteract].Enable();
+					playerInput.actions[actionIDUse].Disable();
+					playerInput.actions[actionIDEsc].Enable();
 					break;
 				case eInputMode.Pause:
 					playerInput.actions[actionIDMove].Disable();
 					playerInput.actions[actionIDLook].Disable();
 					playerInput.actions[actionIDZoom].Disable();
 					playerInput.actions[actionIDInteract].Disable();
+					playerInput.actions[actionIDUse].Disable();
+					playerInput.actions[actionIDEsc].Enable();
+					break;
+				case eInputMode.Freeze:
+					playerInput.actions[actionIDMove].Disable();
+					playerInput.actions[actionIDLook].Disable();
+					playerInput.actions[actionIDZoom].Disable();
+					playerInput.actions[actionIDInteract].Disable();
+					playerInput.actions[actionIDUse].Disable();
+					playerInput.actions[actionIDEsc].Disable();
 					break;
 			}
 			inputMode = value;
@@ -146,7 +164,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		animPlayer.getPlayableController(clipDamage,2).addEndAnimationAction(
 			()=>{animPlayer.stopLayer(2);}
 		);
-		InputMode = eInputMode.Pause;
+		InputMode = eInputMode.Freeze;
 	}
 	void OnEnable(){
 		playerInput.actions[actionIDMove].performed += onInputMove;
@@ -372,6 +390,11 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	private void onInputUse(InputAction.CallbackContext context){
 		CandleManager.Instance.toggleCandleLight();
 	}
+	public IEnumerator rfDie(){
+		yield return animPlayer.transitionTo(clipDie,durationTransitionDie).WaitEndAnimation;
+		animPlayer.resetBinding();
+		animPlayer.stopLayer(0);
+	}
 
 	//[SerializeField] Transform tTest;
 	//bool bWalk = false;
@@ -413,6 +436,14 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		if(Keyboard.current.upArrowKey.wasPressedThisFrame){
 			animPlayer.setLayerWeight(2,2.0f);
 			CandleManager.Instance.addLight(0.5f);
+		}
+		if(Keyboard.current.downArrowKey.wasPressedThisFrame){
+			HpBarController.Instance.addHp(-0.2f); }
+		if(Keyboard.current.numpad0Key.wasPressedThisFrame){
+			animPlayer.transitionTo(clipDie,durationTransitionDie);
+		}
+		if(Keyboard.current.numpad1Key.wasPressedThisFrame){
+			SceneMainManager.Instance.onDie();
 		}
 	}
 	//void FixedUpdate(){

@@ -267,7 +267,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1096148842}
   - component: {fileID: 1096148841}
-  - component: {fileID: 1096148840}
+  - component: {fileID: 1096148843}
   m_Layer: 0
   m_Name: SceneStoryManager
   m_TagString: Untagged
@@ -275,36 +275,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1096148840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096148839}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5080ceb8ce3d1dd4cbb774d2c2f8bd2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bDontDestroyOnLoad: 0
-  aText:
-  - A rumor told of a mysterious maze...
-  - ...where going straight takes you back to the same place...
-  - ...but going around in circle may get you elsewhere...
-  - Most believe it is just a story...
-  - ...but few claims it is real...
-  - '...and that it is in constant wait for its next victim... '
-  txtStory: {fileID: 402280189}
-  typewriteSpeed: 15
-  gContinue: {fileID: 1630725449}
-  blurDuration: 1.5
-  cooldownSkip: 0.5
-  actionIDInteract:
-    sGuid: 16beace6-7dc2-4c9f-a708-594f3f395814
-  indexSceneMain:
-    index: 1
-    sceneAsset: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
 --- !u!114 &1096148841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,6 +319,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1096148843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096148839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5773a81b37e24374782de3f7f58b37cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bDontDestroyOnLoad: 0
+  txtStory: {fileID: 402280189}
+  typewriteSpeed: 15
+  gContinue: {fileID: 1630725449}
+  blurDuration: 1.5
+  cooldownSkip: 0.5
+  actionIDInteract:
+    sGuid: 16beace6-7dc2-4c9f-a708-594f3f395814
+  aText:
+  - A rumor told of a mysterious maze...
+  - ...where going straight takes you back to the same place...
+  - ...but going around in circle may get you elsewhere...
+  - Most believe it is just a story...
+  - ...but few claims it is real...
+  - '...and that it is in constant wait for its next victim... '
+  indexSceneMain:
+    index: 1
+    sceneAsset: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
 --- !u!1 &1187678810
 GameObject:
   m_ObjectHideFlags: 0
