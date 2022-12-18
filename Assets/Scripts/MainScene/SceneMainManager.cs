@@ -240,9 +240,9 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[SerializeField] float durationFade;
 
 	private IEnumerator rfStartSequence(){
-		PlayerController.Instance.enabled = false;
+		//PlayerController.Instance.enabled = false;
 		yield return imgScreenCover.tweenAlpha(0.0f,0.0f,durationFade);
-		PlayerController.Instance.enabled = true;
+		//PlayerController.Instance.enabled = true;
 		PlayerController.Instance.InputMode = eInputMode.MainGameplay;
 	}
 	#endregion

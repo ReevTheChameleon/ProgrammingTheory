@@ -63,6 +63,9 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	[SerializeField] AnimationClip clipOpen;
 	[SerializeField] Vector2 openTransitionTime;
 
+	[Header("InputUse")]
+	[SerializeField] InputActionID actionIDUse;
+
 	public enum eCutsceneMotion{Walk=0,WalkBackward,SlideLeft,SlideRight}
 	[Tooltip("Walk=0,WalkBackward,SlideLeft,SlideRight")]
 	[SerializeField] public AnimationTree treeCutsceneMotion;
@@ -120,7 +123,6 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	protected override void Awake(){
 		base.Awake();
 		playerInput = GetComponent<PlayerInput>();
-		animPlayer = GetComponent<AnimationPlayer>();
 		rb = GetComponent<Rigidbody>();
 		Renderer[] aRenderer = GetComponentsInChildren<Renderer>();
 		for(int i=0; i<aRenderer.Length; ++i){
@@ -128,6 +130,23 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		aColorPlayer = new Color[lSharedMatPlayer.Count];
 		for(int i=0; i<lSharedMatPlayer.Count; ++i){
 			aColorPlayer[i] = lSharedMatPlayer[i].color;}
+
+		animPlayer = GetComponent<AnimationPlayer>();
+		animPlayer.addLayer(1,null,true);
+		animPlayer.addLayer(2,null,true);
+		animPlayer.getPlayableController(clipPickup).addAnimationActionAtEvent(
+			0,()=>{ (Interactable.Focused as PickableInspectable)?.onPicked(); }
+		);
+		animPlayer.getPlayableController(clipOpen).addAnimationActionAtEvent(
+			0,()=>{
+				KeyManager.Instance.removeKey();
+				KeyManager.Instance.tweenIconKeyPick(vDoorPos,false);
+			}
+		);
+		animPlayer.getPlayableController(clipDamage,2).addEndAnimationAction(
+			()=>{animPlayer.stopLayer(2);}
+		);
+		InputMode = eInputMode.Pause;
 	}
 	void OnEnable(){
 		playerInput.actions[actionIDMove].performed += onInputMove;
@@ -136,6 +155,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDZoom].performed += onInputZoom;
 		playerInput.actions[actionIDInteract].performed += onInputInteract;
 		playerInput.actions[actionIDEsc].performed += onInputEsc;
+		playerInput.actions[actionIDUse].performed += onInputUse;
 	}
 	void OnDisable(){
 		playerInput.actions[actionIDMove].performed -= onInputMove;
@@ -144,13 +164,12 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		playerInput.actions[actionIDZoom].performed -= onInputZoom;
 		playerInput.actions[actionIDInteract].performed += onInputInteract;
 		playerInput.actions[actionIDEsc].performed -= onInputEsc;
+		playerInput.actions[actionIDUse].performed -= onInputUse;
 		routineTurn.stop();
 		restorePlayerColor();
 	}
 	void Start(){
 		animPlayer.play(clipIdle);
-		animPlayer.addLayer(1,null,true);
-		animPlayer.addLayer(2,null,true);
 		#if UNITY_EDITOR
 		GraphVisualizerClient.Show(animPlayer.getGraph());
 		#endif
@@ -310,9 +329,9 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		animPlayer.transitionTo(clipIdle,clipPickupTransitionTime);
 		yield return new WaitForSeconds(clipPickupTransitionTime);
 	}
-	void onAnimEventPickup(){
-		(Interactable.Focused as PickableInspectable)?.onPicked();
-	}
+	//void onAnimEventPickup(){
+	//	(Interactable.Focused as PickableInspectable)?.onPicked();
+	//}
 
 	private Vector3 vDoorPos;
 	public IEnumerator rfUnlock(Vector3 vDoorPos){
@@ -322,10 +341,10 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		animPlayer.transitionTo(clipIdle,openTransitionTime.y);
 		yield return new WaitForSeconds(openTransitionTime.y);
 	}
-	public void onAnimEventLockTouch(){
-		KeyManager.Instance.removeKey();
-		KeyManager.Instance.tweenIconKeyPick(vDoorPos,false);
-	}
+	//public void onAnimEventLockTouch(){
+	//	KeyManager.Instance.removeKey();
+	//	KeyManager.Instance.tweenIconKeyPick(vDoorPos,false);
+	//}
 	public void damagePlayer(float amount){ //full=1.0f
 		HpBarController.Instance.addHp(-amount);
 		animPlayer.play(clipDamage,2).setSpeed(clipDamageSpeed);
@@ -343,11 +362,15 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		for(int i=0; i<lSharedMatPlayer.Count; ++i){
 			lSharedMatPlayer[i].color = aColorPlayer[i];}
 	}
-	void onAnimEventDamageEnd(){
-		animPlayer.stopLayer(2);
-	}
+	//void onAnimEventDamageEnd(){
+	//	animPlayer.stopLayer(2);
+	//}
 	public void healPlayer(float amount){
 		HpBarController.Instance.addHp(amount);
+	}
+
+	private void onInputUse(InputAction.CallbackContext context){
+		CandleManager.Instance.toggleCandleLight();
 	}
 
 	//[SerializeField] Transform tTest;
@@ -389,6 +412,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		}
 		if(Keyboard.current.upArrowKey.wasPressedThisFrame){
 			animPlayer.setLayerWeight(2,2.0f);
+			CandleManager.Instance.addLight(0.5f);
 		}
 	}
 	//void FixedUpdate(){

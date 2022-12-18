@@ -4,9 +4,6 @@ using Chameleon;
 using UnityEngine.UI;
 
 public class PickableInspectable : OptionInspectable{
-	[Header("Action Pick")]
-	[SerializeField] float durationTweenIcon;
-
 	protected override void onOptionAction(){
 		routineInteract.start(this,rfActionSequence());
 	}

@@ -13,8 +13,10 @@ public class RigLookAtSetting{ //struct wouldn't allow field initializer
 	[WideMode] public Vector2 eulerLimitX;
 	[WideMode] public Vector2 eulerLimitY;
 	[WideMode] public Vector2 eulerLimitZ;
-	[NonSerialized] public Quaternion riggedRotation;
+	public Quaternion RiggedRotation{get; internal set;}
 }
+
+#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(RigLookAtSetting))]
 class RigLookAtSettingDrawer : PropertyDrawer{
 	private GUIContent contentLimit = new GUIContent("Limit");
@@ -63,49 +65,50 @@ class RigLookAtSettingDrawer : PropertyDrawer{
 		return EditorGUIUtility.singleLineHeight * 5;
 	}
 }
+#endif
 
-[Serializable]
-public class RigLookAt{
+//[Serializable]
+public class RigLookAt : MonoBehaviour{
 	//public bool bAutoApply = true;
 	public Transform tLookTarget;
 	[Range(0,1)] public float weight =1.0f;
+	public Vector3 eulerOffset;
 	[Tooltip("Must be ordered down the hierarchy for now. Will revise later")]
 	public RigLookAtSetting[] aRigSetting;
 	
-	//#if UNITY_EDITOR
-	//[SerializeField] bool bDrawRay;
-	//#endif
+	#if UNITY_EDITOR
+	[SerializeField] bool bDrawRay;
+	#endif
 
-	//void LateUpdate(){
-	//	if(bAutoApply){
-	//		calculateRig();
-	//		for(int i=0; i<aRigSetting.Length; ++i)
-	//			aRigSetting[i].transform.rotation = aRigSetting[i].rotation;
-	//	}
+	void LateUpdate(){
+		calculateRig(true);
 		
-	//	#if UNITY_EDITOR
-	//	/* Do this outside main loop to draw ACTUAL result after ENTIRE loop is done
-	//	(because result of next loop may alter rotation of previous loop,
-	//	which I will fix later.) */
-	//	if(bDrawRay)
-	//		for(int i=0; i<aRigSetting.Length; ++i)
-	//			Debug.DrawRay(aRigSetting[i].transform.position,aRigSetting[i].transform.forward);
-	//	#endif
-	//}
+		#if UNITY_EDITOR
+		/* Do this outside main loop to draw ACTUAL result after ENTIRE loop is done
+		(because result of next loop may alter rotation of previous loop,
+		which I will fix later.) */
+		if(bDrawRay)
+			for(int i=0; i<aRigSetting.Length; ++i)
+				Debug.DrawRay(aRigSetting[i].transform.position,aRigSetting[i].transform.forward);
+		#endif
+	}
+	/* Calculation result is stored in aRigSettings[i].RiggedRotation */
 	public void calculateRig(bool bApply=false){
 		for(int i=0; i<aRigSetting.Length; ++i)
-			aRigSetting[i].riggedRotation = aRigSetting[i].transform.rotation;
+			aRigSetting[i].RiggedRotation = aRigSetting[i].transform.rotation;
 
 		if(tLookTarget!=null && weight!=0.0f){
 			for(int i=0; i<aRigSetting.Length; ++i){
 				Transform tBone = aRigSetting[i].transform;
 				Quaternion qLook = Quaternion.Lerp(
-					aRigSetting[i].riggedRotation,
+					aRigSetting[i].RiggedRotation,
 					Quaternion.LookRotation(tLookTarget.position-tBone.position),
 					weight * aRigSetting[i].weight
 				);
 				Vector3 eulerAnglesDelta =
-					(aRigSetting[i].riggedRotation.inverse() * qLook).eulerAngles;
+					(aRigSetting[i].RiggedRotation.inverse() * qLook).eulerAngles
+					+ eulerOffset
+				;
 				Quaternion qDeltaClamped = Quaternion.Euler(
 					aRigSetting[i].bRigX ?
 						MathfExtension.clampAngleDeg(
@@ -122,12 +125,12 @@ public class RigLookAt{
 							eulerAnglesDelta.z,aRigSetting[i].eulerLimitZ.x,aRigSetting[i].eulerLimitZ.y) :
 						0.0f
 				);
-				aRigSetting[i].riggedRotation = aRigSetting[i].riggedRotation * qDeltaClamped;
+				aRigSetting[i].RiggedRotation = aRigSetting[i].RiggedRotation * qDeltaClamped;
 			}
 		}
 		if(bApply){
 			for(int i=0; i<aRigSetting.Length; ++i)
-				aRigSetting[i].transform.rotation = aRigSetting[i].riggedRotation;
+				aRigSetting[i].transform.rotation = aRigSetting[i].RiggedRotation;
 		}
 	}
 	[System.Diagnostics.Conditional("UNITY_EDITOR")]
@@ -136,16 +139,3 @@ public class RigLookAt{
 			Debug.DrawRay(aRigSetting[i].transform.position,aRigSetting[i].transform.forward);
 	}
 }
-
-//#if UNITY_EDITOR
-//[CustomEditor(typeof(RigLookAt))]
-//class RigPlayerEditor : Editor{
-//	RigLookAt targetAs;
-//	void OnEnable(){
-//		targetAs = (RigLookAt)target;
-//	}
-//	public override void OnInspectorGUI(){
-		
-//	}
-//}
-//#endif

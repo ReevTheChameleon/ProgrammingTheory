@@ -26,7 +26,7 @@ public class HeadLookController : LoneMonoBehaviour<HeadLookController>{
 		for(int i=0; i<rigHeadLookAt.aRigSetting.Length; ++i){
 			RigLookAtSetting rigSetting = rigHeadLookAt.aRigSetting[i];
 			Quaternion qDeltaLocal =
-				rigSetting.transform.rotation.inverse() * rigSetting.riggedRotation;
+				rigSetting.transform.rotation.inverse() * rigSetting.RiggedRotation;
 			Quaternion qDeltaPrev = aqPrev[i].inverse() * qDeltaLocal;
 			float maxAngle = Time.deltaTime * maxSpeedHeadTurn * rigSetting.weight;
 			qDeltaPrev = qDeltaPrev.clampAngle(-maxAngle,maxAngle);

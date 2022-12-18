@@ -21,7 +21,7 @@ class TestDragDropEditor : Editor{
 		EditorGUILayout.LabelField("Whatever");
 		EditorGUILayout.LabelField("Whatever2");
 
-		Object[] ag = EditorHelper.dropZone(GUILayoutUtility.GetLastRect(),typeof(GameObject));
+		Object[] ag = EditorHelper.dropZone<GameObject>(GUILayoutUtility.GetLastRect());
 		if(ag!=null)
 			foreach(GameObject g in ag)
 				Debug.Log(g);
