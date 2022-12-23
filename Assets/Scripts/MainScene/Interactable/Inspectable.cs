@@ -62,9 +62,8 @@ public class Inspectable : Interactable{
 		bHideBalloon = true;
 		SceneMainManager.Instance.CanvasBalloon.gameObject.SetActive(false);
 
-
 		subitrPanCamera.Start.vCamTarget = tCamTarget.position;
-		subitrPanCamera.End.vCamTarget = transform.position;
+		subitrPanCamera.End.vCamTarget = tLookTarget.position;
 		subitrPanCamera.Start.qCamTarget = tCamTarget.localRotation;
 		Vector3 eulerCamTarget = tCamTarget.localEulerAngles;
 		Quaternion qCamTargetEnd = Quaternion.Euler(eulerCamTarget.newX(

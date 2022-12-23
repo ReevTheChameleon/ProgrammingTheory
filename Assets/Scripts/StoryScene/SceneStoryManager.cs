@@ -11,6 +11,7 @@ public class SceneStoryManager : StoryManager{
 		get{return aText;}
 	}
 	protected override IEnumerator rfRunStory(string[] aText){
+		Cursor.lockState = CursorLockMode.Locked;
 		yield return base.rfRunStory(aText);
 		advanceScene();
 	}

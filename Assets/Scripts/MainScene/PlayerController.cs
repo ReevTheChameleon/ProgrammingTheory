@@ -265,11 +265,13 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 	private void onInputInteract(InputAction.CallbackContext context){
 		Interactable.Focused?.onInteracted();
 	}
-	public void turnToward(Transform tTarget){
-		routineTurn.start(this,rfTurnToward(tTarget));
+	public WaitLoneCoroutine turnToward(Transform tTarget){
+		return routineTurn.start(this,rfTurnToward(tTarget.position-transform.position));
 	}
-	private IEnumerator rfTurnToward(Transform tTarget){
-		Vector3 vDirection = tTarget.position-transform.position;
+	public WaitLoneCoroutine turnToward(Vector3 vDirection){
+		return routineTurn.start(this,rfTurnToward(vDirection));
+	}
+	private IEnumerator rfTurnToward(Vector3 vDirection){
 		float eulerYStart = transform.eulerAngles.y;
 		float eulerYEnd = -vDirection.xz().polarAngle() + 90.0f;
 		//Because eulerAngles is positive clockwise
@@ -298,7 +300,7 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		animPlayer.stopLayer(1);
 	}
 
-	public IEnumerator rfWalkToward(Vector3 vPosition,eCutsceneMotion motion){
+	public IEnumerator rfWalkToward(Vector3 vPosition,eCutsceneMotion motion,bool bIgnoreY=false){
 		Vector3 vPosStart = transform.position;
 		float distance = Vector3.Distance(vPosition,vPosStart);
 		PlayableController controller;
@@ -324,12 +326,16 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 			() => {animPlayer.transitionTo(clipIdle,walkTransitionTime,0);},
 			totalTime-walkTransitionTime
 		);
+		float yStart = 0.0f;
 		while(time < totalTime){
 			yield return null;
+			yStart = rb.position.y;
 			rb.position = Vector3.Lerp(vPosStart,vPosition,Mathf.SmoothStep(0.0f,1.0f,time/totalTime));
-			time += Time.deltaTime;
+			if(bIgnoreY){
+				rb.position = rb.position.newY(yStart);}
+			time += Time.deltaTime; //perhaps should be Time.fixedDeltaTime; will study later
 		}
-		rb.position = vPosition;
+		rb.position = bIgnoreY ? vPosition.newY(yStart) : vPosition;
 		StopCoroutine(c); //will think of more elegant way later.
 	}
 	public bool ShowCursor{
@@ -394,6 +400,22 @@ public class PlayerController : LoneMonoBehaviour<PlayerController>{
 		yield return animPlayer.transitionTo(clipDie,durationTransitionDie).WaitEndAnimation;
 		animPlayer.resetBinding();
 		animPlayer.stopLayer(0);
+	}
+
+	public void finalTouch(){
+		ClipPlayableController controllerOpen = animPlayer.getPlayableController(clipOpen);
+		controllerOpen.removeAnimationAction(0);
+		controllerOpen.addAnimationActionAtEvent(
+			0,() => {
+				Debug.Log("StopLayer 0");
+				animPlayer.resetBinding();
+				animPlayer.stopLayer(0);
+				Debug.Log("StopLayer 0 done");
+				//animPlayer.stopLayer(0);
+			}
+		);
+		animPlayer.transitionTo(clipOpen,transitionTime);
+		//animPlayer.stopLayer(0);
 	}
 
 	//[SerializeField] Transform tTest;

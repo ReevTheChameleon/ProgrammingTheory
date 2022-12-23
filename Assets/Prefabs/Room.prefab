@@ -603,7 +603,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rangeEulerYInteractable: {x: -180, y: 180}
-  vBallonPos: {x: 0, y: 5, z: 0}
+  vBalloonPos: {x: 0, y: 5, z: 0}
+  tLookTarget: {fileID: 2548122531955977919}
   lText: []
   durationPan: 0.75
   rangeCamEulerX: {x: 0, y: 0}

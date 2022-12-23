@@ -81,6 +81,7 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 		matCover = gCover.GetComponent<Renderer>().sharedMaterial;
 
 		dlgPause.setButtonAction(onEndPause,onEndPause,onEndPause);
+		subitrFadeInScreenCover = imgScreenCover.tweenAlpha(1.0f,0.0f,durationFade);
 	}
 	void Start(){
 		RoomScaler rawRoomScaler =
@@ -242,10 +243,12 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	[Header("Start Sequence")]
 	[SerializeField] Image imgScreenCover;
 	[SerializeField] float durationFade;
+	private TweenRoutineUnit subitrFadeInScreenCover;
 
 	private IEnumerator rfStartSequence(){
 		//PlayerController.Instance.enabled = false;
-		yield return imgScreenCover.tweenAlpha(1.0f,0.0f,durationFade);
+		//yield return imgScreenCover.tweenAlpha(1.0f,0.0f,durationFade);
+		yield return subitrFadeInScreenCover;
 		//PlayerController.Instance.enabled = true;
 		imgScreenCover.transform.root.gameObject.SetActive(false); //set that canvas inactive
 		PlayerController.Instance.InputMode = eInputMode.MainGameplay;
@@ -285,8 +288,8 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 	}
 	public void onWin(){
 		IsWin = true;
-		PlayerController.Instance.InputMode = eInputMode.Freeze;
-		StartCoroutine(rfChangeScene());
+		//PlayerController.Instance.InputMode = eInputMode.Freeze; //do since door approached
+		StartCoroutine(rfWinningSequence());
 	}
 	private IEnumerator rfDyingSequence(){
 		/* This is to make camera follow the dying body. We can't do this from the beginning
@@ -313,14 +316,30 @@ public class SceneMainManager : LoneMonoBehaviour<SceneMainManager>{
 			durationPanCamera
 		));
 		yield return PlayerController.Instance.rfDie();
-		yield return rfChangeScene();
-	}
-	private IEnumerator rfChangeScene(){
-		imgScreenCover.transform.root.gameObject.SetActive(true);
-		yield return imgScreenCover.tweenAlpha(0.0f,1.0f,durationFade);
+		imgScreenCover.transform.root.gameObject.SetActive(true); //set Canvas active
+		subitrFadeInScreenCover.bReverse = true;
+		yield return subitrFadeInScreenCover;
 		yield return new WaitForSeconds(timeEndSuspend);
 		SceneManager.LoadSceneAsync(sceneIndexEnd);
 	}
+	private IEnumerator rfWinningSequence(){
+		HeadLookController.Instance.setHeadLookTarget(null);
+		imgScreenCover.transform.root.gameObject.SetActive(true); //set Canvas active
+		imgScreenCover.color = Color.white;
+		subitrFadeInScreenCover.bReverse = true;
+		yield return subitrFadeInScreenCover;
+		yield return new WaitForSeconds(timeEndSuspend);
+		yield return imgScreenCover.tweenColor(imgScreenCover.color,Color.black,durationFade);
+		SceneManager.LoadSceneAsync(sceneIndexEnd);
+	}
+	//private IEnumerator rfChangeScene(){
+	//	imgScreenCover.color = IsWin ? Color.white : Color.black;
+	//	imgScreenCover.transform.root.gameObject.SetActive(true);
+	//	subitrFadeInScreenCover.bReverse = true;
+	//	yield return subitrFadeInScreenCover;
+	//	yield return new WaitForSeconds(timeEndSuspend);
+	//	SceneManager.LoadSceneAsync(sceneIndexEnd);
+	//}
 	#endregion
 //--------------------------------------------------------------------------------------------
 }

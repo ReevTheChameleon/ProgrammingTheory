@@ -11,7 +11,8 @@ so it is not implemented. */
 public abstract class Interactable : MonoBehaviour{
 	[Bakable][Tag] protected const string tagPlayer = "Player";
 	[SerializeField] protected Vector2 rangeEulerYInteractable;
-	[SerializeField][ShowPosition(true,"Balloon")] protected Vector3 vBallonPos;
+	[SerializeField][ShowPosition(true,"Balloon")] protected Vector3 vBalloonPos;
+	[SerializeField] protected Transform tLookTarget;
 	protected Transform tPlayer;
 	protected bool bHideBalloon;
 	private bool bActivatingBalloon = false;
@@ -28,7 +29,8 @@ public abstract class Interactable : MonoBehaviour{
 		enabled = false;
 	}
 	protected virtual void OnDisable(){
-		deactivate();
+		if(Focused == this){
+			deactivate();}
 	}
 	protected virtual void OnTriggerEnter(Collider other){
 		if(other.CompareTag(tagPlayer)){
@@ -48,9 +50,9 @@ public abstract class Interactable : MonoBehaviour{
 		Canvas cvBalloon = SceneMainManager.Instance.CanvasBalloon;
 		if(!cvBalloon)
 			return; //prevent MissingReferenceException if called from OnDisable() on scene unloaded
-		cvBalloon.transform.position = transform.TransformPoint(vBallonPos);
+		cvBalloon.transform.position = transform.TransformPoint(vBalloonPos);
 		cvBalloon.gameObject.SetActive(true);
-		HeadLookController.Instance.setHeadLookTarget(transform);
+		HeadLookController.Instance.setHeadLookTarget(tLookTarget);
 		bActivatingBalloon = true;
 	}
 	protected virtual void deactivate(){

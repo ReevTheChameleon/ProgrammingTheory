@@ -3,6 +3,7 @@ using Chameleon;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using UnityEngine.UI;
 
 public class Billboard : MonoBehaviour{
 	private Transform tCamera;

@@ -333,7 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bDontDestroyOnLoad: 0
   txtStory: {fileID: 402280189}
-  typewriteSpeed: 15
+  typewriteSpeed: 20
   gContinue: {fileID: 1630725449}
   blurDuration: 1.5
   cooldownSkip: 0.5

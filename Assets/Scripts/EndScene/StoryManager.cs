@@ -9,15 +9,15 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(PlayerInput))]
 public abstract class StoryManager : LoneMonoBehaviour<StoryManager>{
 	[Header("Story Routine")]
-	[SerializeField] TextMeshProUGUI txtStory;
-	[SerializeField] float typewriteSpeed;
+	[SerializeField] protected TextMeshProUGUI txtStory;
+	[SerializeField] protected float typewriteSpeed;
 	private TypewriteRoutineUnit subitrRunStory;
-	[SerializeField] GameObject gContinue;
-	[SerializeField] float blurDuration;
-	private ParallelEnumerator subitrBlur;
-	private InterpolableKawaseBlurFeature renderFeatureKawaseBlur;
-	[SerializeField] float cooldownSkip;
-	private FrameTrigger triggerSkip = new FrameTrigger();
+	[SerializeField] protected GameObject gContinue;
+	[SerializeField] protected float blurDuration;
+	protected ParallelEnumerator subitrBlur;
+	protected InterpolableKawaseBlurFeature renderFeatureKawaseBlur;
+	[SerializeField] protected float cooldownSkip;
+	protected FrameTrigger triggerSkip = new FrameTrigger();
 
 	[Header("Input")]
 	[SerializeField] InputActionID actionIDInteract;
