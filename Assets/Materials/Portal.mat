@@ -120,7 +120,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     - matDeltaColor: 2.5
-    - matEmission: 0.93
+    - matEmission: 0
     - matPerlinOctave: 1
     - matZWrite: 1
     m_Colors:

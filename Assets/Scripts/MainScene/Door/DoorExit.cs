@@ -5,7 +5,6 @@ using Chameleon;
 public class DoorExit : OptionInspectable,IDoor{
 	[Header("Ballooon")]
 	[SerializeField] float offsetLookTargetZ;
-	private Vector3 vBalloonPosStart;
 
 	[Header("EndSequence")]
 	[SerializeField] float offsetCameraFinal;
@@ -20,9 +19,6 @@ public class DoorExit : OptionInspectable,IDoor{
 		base.Awake();
 		cNormal.enabled = true;
 		cFinal.enabled = false;
-	}
-	void Start(){
-		vBalloonPosStart = vBalloonPos;
 	}
 	public void reset(){
 		throw new System.NotImplementedException();
@@ -50,22 +46,22 @@ public class DoorExit : OptionInspectable,IDoor{
 		bFinalSequence = true;
 		dlgFooter.TweenDlg.bReverse = true;
 		dlgFooter.TweenDlg.Reset();
+		Vector3 vForward = Vector3.Project(
+			playerController.transform.position-transform.position,
+			transform.forward
+		).normalized;
 		subitrPanCamera.reset(
 			subitrPanCamera.End,
 			subitrPanCamera.Start //switch place
 		);
 		subitrPanCamera.End.vCamTarget = tLookTarget.position;
-		Vector3 eulerCamTarget = Quaternion.LookRotation(transform.forward,Vector3.up).eulerAngles;
+		Vector3 eulerCamTarget = Quaternion.LookRotation(-vForward,Vector3.up).eulerAngles;
 		subitrPanCamera.End.qCamTarget = Quaternion.Euler(
 			eulerCamTarget.newX(MathfExtension.clamp(eulerCamTarget.x,rangeCamEulerX)));
 		subitrPanCamera.End.camDistance = offsetCameraFinal;
 
-		Vector3 vForward = Vector3.Project(
-			playerController.transform.position-transform.position,
-			transform.forward
-		).normalized;
 		Vector3 vPosFinal = transform.position +
-			Quaternion.FromToRotation(Vector3.forward,transform.forward)*
+			Quaternion.FromToRotation(Vector3.forward,-vForward)*
 				playerController.VOpenOffset	
 		;
 		yield return new ParallelEnumerator(this,
@@ -80,7 +76,7 @@ public class DoorExit : OptionInspectable,IDoor{
 		yield return playerController.rfWalkToward(
 			vPosFinal,PlayerController.eCutsceneMotion.Walk,true);
 
-		yield return playerController.turnToward(transform.forward);
+		yield return playerController.turnToward(-vForward);
 		
 		subitrPanCamera.reset(
 			subitrPanCamera.End,

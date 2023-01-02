@@ -31,3 +31,9 @@ MonoBehaviour:
     licenseURL: http://scripts.sil.org/OFL
     licenseFile: {fileID: 4900000, guid: 9fddeaebeba66694294273e9351c0c1d, type: 3}
     note: with Reserved Font Names "Acme"
+  - asset: {fileID: 102900000, guid: 49309db2bc686a14aa5337fc324fd41a, type: 3}
+    copyrightText: "Textures.com, Copyright \xA9 2005 - 2022"
+    licenseType: Proprietary
+    licenseURL: https://www.textures.com/static/terms/TexturesCom%20-%20Terms%20of%20Service%20Rev3-14.pdf
+    licenseFile: {fileID: 102900000, guid: c8c7ca226d5e6da419bfec59de0adbdd, type: 3}
+    note: 
